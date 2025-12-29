@@ -67,729 +67,847 @@ do
         }
     end
     function a.b()
-        local b = (cloneref or clonereference or function(b)
-                return b
-            end)
+    local b = (cloneref or clonereference or function(b)
+        return b
+    end)
 
-        local d = b(game:GetService "RunService")
-        local e = b(game:GetService "UserInputService")
-        local f = b(game:GetService "TweenService")
-        local g = b(game:GetService "LocalizationService")
-        local h = b(game:GetService "HttpService")
-        local i = d.Heartbeat
+    local d = b(game:GetService "RunService")
+    local e = b(game:GetService "UserInputService")
+    local f = b(game:GetService "TweenService")
+    local g = b(game:GetService "LocalizationService")
+    local h = b(game:GetService "HttpService")
+    local i = d.Heartbeat
 
-        local j = "https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"
+    local j = "https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"
 
-        local l = loadstring(game.HttpGetAsync and game:HttpGetAsync(j) or h:GetAsync(j))()
-        l.SetIconsType "lucide"
+    local l = loadstring(game.HttpGetAsync and game:HttpGetAsync(j) or h:GetAsync(j))()
+    l.SetIconsType "lucide"
 
-        local m
+    local m
 
-        local p = {
-            Font = "rbxassetid://12187365364",
-            Localization = nil,
-            CanDraggable = true,
-            Theme = nil,
-            Themes = nil,
-            Icons = l,
-            Signals = {},
-            Objects = {},
-            LocalizationObjects = {},
-            FontObjects = {},
-            Language = string.match(g.SystemLocaleId, "^[a-z]+"),
-            Request = http_request or (syn and syn.request) or request,
-            DefaultProperties = {
-                ScreenGui = {
-                    ResetOnSpawn = false,
-                    ZIndexBehavior = "Sibling"
-                },
-                CanvasGroup = {
-                    BorderSizePixel = 0,
-                    BackgroundColor3 = Color3.new(1, 1, 1)
-                },
-                Frame = {
-                    BorderSizePixel = 0,
-                    BackgroundColor3 = Color3.new(1, 1, 1)
-                },
-                TextLabel = {
-                    BackgroundColor3 = Color3.new(1, 1, 1),
-                    BorderSizePixel = 0,
-                    Text = "",
-                    RichText = true,
-                    TextColor3 = Color3.new(1, 1, 1),
-                    TextSize = 14
-                },
-                TextButton = {
-                    BackgroundColor3 = Color3.new(1, 1, 1),
-                    BorderSizePixel = 0,
-                    Text = "",
-                    AutoButtonColor = false,
-                    TextColor3 = Color3.new(1, 1, 1),
-                    TextSize = 14
-                },
-                TextBox = {
-                    BackgroundColor3 = Color3.new(1, 1, 1),
-                    BorderColor3 = Color3.new(0, 0, 0),
-                    ClearTextOnFocus = false,
-                    Text = "",
-                    TextColor3 = Color3.new(0, 0, 0),
-                    TextSize = 14
-                },
-                ImageLabel = {
-                    BackgroundTransparency = 1,
-                    BackgroundColor3 = Color3.new(1, 1, 1),
-                    BorderSizePixel = 0
-                },
-                ImageButton = {
-                    BackgroundColor3 = Color3.new(1, 1, 1),
-                    BorderSizePixel = 0,
-                    AutoButtonColor = false
-                },
-                UIListLayout = {
-                    SortOrder = "LayoutOrder"
-                },
-                ScrollingFrame = {
-                    ScrollBarImageTransparency = 1,
-                    BorderSizePixel = 0,
-                    CanvasSize = UDim2.new(0, 0, 0, 0),
-                    ScrollBarThickness = 0
-                },
-                VideoFrame = {
-                    BorderSizePixel = 0
-                }
+    local p = {
+        Font = "rbxassetid://12187365364",
+        Localization = nil,
+        CanDraggable = true,
+        Theme = nil,
+        Themes = nil,
+        Icons = l,
+        Signals = {},
+        Objects = {},
+        LocalizationObjects = {},
+        FontObjects = {},
+        Language = string.match(g.SystemLocaleId, "^[a-z]+"),
+        Request = http_request or (syn and syn.request) or request,
+        DefaultProperties = {
+            ScreenGui = {
+                ResetOnSpawn = false,
+                ZIndexBehavior = "Sibling"
             },
-            Colors = {
-                Red = "#e53935",
-                Orange = "#f57c00",
-                Green = "#43a047",
-                Blue = "#039be5",
-                White = "#ffffff",
-                Grey = "#484848"
+            CanvasGroup = {
+                BorderSizePixel = 0,
+                BackgroundColor3 = Color3.new(1, 1, 1)
             },
-            ThemeFallbacks = a.load "a",
-            Shapes = {
-                Square = "rbxassetid://82909646051652",
-                ["Square-Outline"] = "rbxassetid://72946211851948",
-                Squircle = "rbxassetid://80999662900595",
-                SquircleOutline = "rbxassetid://117788349049947",
-                ["Squircle-Outline"] = "rbxassetid://117817408534198",
-                SquircleOutline2 = "rbxassetid://117817408534198",
-                ["Shadow-sm"] = "rbxassetid://84825982946844",
-                ["Squircle-TL-TR"] = "rbxassetid://73569156276236",
-                ["Squircle-BL-BR"] = "rbxassetid://93853842912264",
-                ["Squircle-TL-TR-Outline"] = "rbxassetid://136702870075563",
-                ["Squircle-BL-BR-Outline"] = "rbxassetid://75035847706564",
-                ["Glass-0.7"] = "rbxassetid://79047752995006",
-                ["Glass-1"] = "rbxassetid://97324581055162",
-                ["Glass-1.4"] = "rbxassetid://95071123641270"
+            Frame = {
+                BorderSizePixel = 0,
+                BackgroundColor3 = Color3.new(1, 1, 1)
+            },
+            TextLabel = {
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0,
+                Text = "",
+                RichText = true,
+                TextColor3 = Color3.new(1, 1, 1),
+                TextSize = 14
+            },
+            TextButton = {
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0,
+                Text = "",
+                AutoButtonColor = false,
+                TextColor3 = Color3.new(1, 1, 1),
+                TextSize = 14
+            },
+            TextBox = {
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderColor3 = Color3.new(0, 0, 0),
+                ClearTextOnFocus = false,
+                Text = "",
+                TextColor3 = Color3.new(0, 0, 0),
+                TextSize = 14
+            },
+            ImageLabel = {
+                BackgroundTransparency = 1,
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0
+            },
+            ImageButton = {
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 0,
+                AutoButtonColor = false
+            },
+            UIListLayout = {
+                SortOrder = "LayoutOrder"
+            },
+            ScrollingFrame = {
+                ScrollBarImageTransparency = 1,
+                BorderSizePixel = 0
+            },
+            VideoFrame = {
+                BorderSizePixel = 0
             }
+        },
+        Colors = {
+            Red = "#e53935",
+            Orange = "#f57c00",
+            Green = "#43a047",
+            Blue = "#039be5",
+            White = "#ffffff",
+            Grey = "#484848"
+        },
+        ThemeFallbacks = a.load "a",
+        Shapes = {
+            Square = "rbxassetid://82909646051652",
+            ["Square-Outline"] = "rbxassetid://72946211851948",
+            Squircle = "rbxassetid://80999662900595",
+            SquircleOutline = "rbxassetid://117788349049947",
+            ["Squircle-Outline"] = "rbxassetid://117817408534198",
+            SquircleOutline2 = "rbxassetid://117817408534198",
+            ["Shadow-sm"] = "rbxassetid://84825982946844",
+            ["Squircle-TL-TR"] = "rbxassetid://73569156276236",
+            ["Squircle-BL-BR"] = "rbxassetid://93853842912264",
+            ["Squircle-TL-TR-Outline"] = "rbxassetid://136702870075563",
+            ["Squircle-BL-BR-Outline"] = "rbxassetid://75035847706564",
+            ["Glass-0.7"] = "rbxassetid://79047752995006",
+            ["Glass-1"] = "rbxassetid://97324581055162",
+            ["Glass-1.4"] = "rbxassetid://95071123641270"
+        }
+    }
+
+    function p.Init(r)
+        m = r
+    end
+
+    function p.AddSignal(r, u)
+        local v = r:Connect(u)
+        table.insert(p.Signals, v)
+        return v
+    end
+
+    function p.DisconnectAll()
+        for r, u in next, p.Signals do
+            local v = table.remove(p.Signals, r)
+            v:Disconnect()
+        end
+    end
+
+    function p.SafeCallback(r, ...)
+        if not r then
+            return
+        end
+
+        local u, v = pcall(r, ...)
+        if not u then
+            if m and m.Window and m.Window.Debug then
+                local x, z = v:find ":%d+: "
+
+                warn("[ WindUI: DEBUG Mode ] " .. v)
+
+                return m:Notify {
+                    Title = "DEBUG Mode: Error",
+                    Content = not z and v or v:sub(z + 1),
+                    Duration = 8
+                }
+            end
+        end
+    end
+
+    function p.Gradient(r, u)
+        if m and m.Gradient then
+            return m:Gradient(r, u)
+        end
+
+        local v = {}
+        local x = {}
+
+        for z, A in next, r do
+            local B = tonumber(z)
+            if B then
+                B = math.clamp(B / 100, 0, 1)
+                table.insert(v, ColorSequenceKeypoint.new(B, A.Color))
+                table.insert(x, NumberSequenceKeypoint.new(B, A.Transparency or 0))
+            end
+        end
+
+        table.sort(
+            v,
+            function(B, C)
+                return B.Time < C.Time
+            end
+        )
+        table.sort(
+            x,
+            function(B, C)
+                return B.Time < C.Time
+            end
+        )
+
+        if #v < 2 then
+            error "ColorSequence requires at least 2 keypoints"
+        end
+
+        local B = {
+            Color = ColorSequence.new(v),
+            Transparency = NumberSequence.new(x)
         }
 
-        function p.Init(r)
-            m = r
-        end
-
-        function p.AddSignal(r, u)
-            local v = r:Connect(u)
-            table.insert(p.Signals, v)
-            return v
-        end
-
-        function p.DisconnectAll()
-            for r, u in next, p.Signals do
-                u:Disconnect()
-            end
-            p.Signals = {}
-        end
-
-        function p.SafeCallback(r, ...)
-            if not r then
-                return
-            end
-
-            local u, v = pcall(r, ...)
-            if not u then
-                if m and m.Window and m.Window.Debug then
-                    local x, z = v:find ":%d+: "
-
-                    warn("[ WindUI: DEBUG Mode ] " .. v)
-
-                    return m:Notify {
-                        Title = "DEBUG Mode: Error",
-                        Content = not z and v or v:sub(z + 1),
-                        Duration = 8
-                    }
-                end
+        if u then
+            for C, F in pairs(u) do
+                B[C] = F
             end
         end
 
-        function p.Gradient(r, u)
-            if m and m.Gradient then
-                return m:Gradient(r, u)
-            end
+        return B
+    end
 
-            local v = {}
-            local x = {}
+    function p.SetTheme(r)
+        p.Theme = r
+        p.UpdateTheme(nil, false)
+    end
 
-            for z, A in next, r do
-                local B = tonumber(z)
-                if B then
-                    B = math.clamp(B / 100, 0, 1)
-                    table.insert(v, ColorSequenceKeypoint.new(B, A.Color))
-                    table.insert(x, NumberSequenceKeypoint.new(B, A.Transparency or 0))
-                end
-            end
+    function p.AddFontObject(r)
+        table.insert(p.FontObjects, r)
+        p.UpdateFont(p.Font)
+    end
 
-            table.sort(
-                v,
-                function(B, C)
-                    return B.Time < C.Time
-                end
-            )
-            table.sort(
-                x,
-                function(B, C)
-                    return B.Time < C.Time
-                end
-            )
-
-            if #v < 2 then
-                error "ColorSequence requires at least 2 keypoints"
-            end
-
-            local B = {
-                Color = ColorSequence.new(v),
-                Transparency = NumberSequence.new(x)
-            }
-
-            if u then
-                for C, F in pairs(u) do
-                    B[C] = F
-                end
-            end
-
-            return B
+    function p.UpdateFont(r)
+        p.Font = r
+        for u, v in next, p.FontObjects do
+            v.FontFace = Font.new(r, v.FontFace.Weight, v.FontFace.Style)
         end
+    end
 
-        function p.SetTheme(r)
-            p.Theme = r
-            p.UpdateTheme(nil, true)
-        end
+    function p.GetThemeProperty(r, u)
+        local function getValue(v, x)
+            local z = x[v]
 
-        function p.AddFontObject(r)
-            table.insert(p.FontObjects, r)
-            p.UpdateFont(p.Font)
-        end
-
-        function p.UpdateFont(r)
-            p.Font = r
-            for u, v in next, p.FontObjects do
-                if v and v.Parent then
-                    v.FontFace = Font.new(r, v.FontFace.Weight, v.FontFace.Style)
-                end
+            if z == nil then
+                return nil
             end
-        end
 
-        function p.GetThemeProperty(r, u)
-            local function getValue(v, x)
-                if not x then return nil end
-                local z = x[v]
+            if typeof(z) == "string" and string.sub(z, 1, 1) == "#" then
+                return Color3.fromHex(z)
+            end
 
-                if z == nil then
-                    return nil
-                end
-
-                if typeof(z) == "string" and string.sub(z, 1, 1) == "#" then
-                    return Color3.fromHex(z)
-                end
-
-                if typeof(z) == "Color3" or typeof(z) == "number" then
-                    return z
-                end
-
-                if typeof(z) == "table" and z.Color and z.Transparency then
-                    return z
-                end
-
-                if typeof(z) == "function" then
-                    return z()
-                end
-
+            if typeof(z) == "Color3" then
                 return z
             end
 
-            local v = getValue(r, u)
-            if v ~= nil then
-                if typeof(v) == "string" and string.sub(v, 1, 1) ~= "#" then
-                    local x = p.GetThemeProperty(v, u)
-                    if x ~= nil then
-                        return x
-                    end
-                else
-                    return v
-                end
+            if typeof(z) == "number" then
+                return z
             end
 
-            local x = p.ThemeFallbacks[r]
-            if x ~= nil then
-                if typeof(x) == "string" and string.sub(x, 1, 1) ~= "#" then
-                    return p.GetThemeProperty(x, u)
-                else
-                    return getValue(r, {[r] = x})
-                end
+            if typeof(z) == "table" and z.Color and z.Transparency then
+                return z
             end
 
-            v = getValue(r, p.Themes.Dark)
-            if v ~= nil then
-                if typeof(v) == "string" and string.sub(v, 1, 1) ~= "#" then
-                    local z = p.GetThemeProperty(v, p.Themes.Dark)
-                    if z ~= nil then
-                        return z
-                    end
-                else
-                    return v
-                end
+            if typeof(z) == "function" then
+                return z()
             end
 
-            if x ~= nil then
-                if typeof(x) == "string" and string.sub(x, 1, 1) ~= "#" then
-                    return p.GetThemeProperty(x, p.Themes.Dark)
-                else
-                    return getValue(r, {[r] = x})
-                end
-            end
-
-            return nil
+            return z
         end
 
-        function p.AddThemeObject(r, u)
-            p.Objects[r] = {Object = r, Properties = u}
-            p.UpdateTheme(r, false)
-            return r
+        local v = getValue(r, u)
+        if v ~= nil then
+            if typeof(v) == "string" and string.sub(v, 1, 1) ~= "#" then
+                local x = p.GetThemeProperty(v, u)
+                if x ~= nil then
+                    return x
+                end
+            else
+                return v
+            end
         end
 
-        function p.AddLangObject(r)
-            local u = p.LocalizationObjects[r]
-            local v = u.Object
-            local x = u.TranslationId
-            p.UpdateLang(v, x)
-            return v
+        local x = p.ThemeFallbacks[r]
+        if x ~= nil then
+            if typeof(x) == "string" and string.sub(x, 1, 1) ~= "#" then
+                return p.GetThemeProperty(x, u)
+            else
+                return getValue(r, {[r] = x})
+            end
         end
 
-        function p.UpdateTheme(r, u)
-            local function ApplyTheme(v)
-                if not v.Object or not v.Object.Parent then return end
-                for x, z in pairs(v.Properties or {}) do
-                    local A = p.GetThemeProperty(z, p.Theme)
-                    if A ~= nil then
-                        if typeof(A) == "Color3" then
-                            local B = v.Object:FindFirstChild "WindUIGradient"
-                            if B then
-                                B:Destroy()
-                            end
+        v = getValue(r, p.Themes.Dark)
+        if v ~= nil then
+            if typeof(v) == "string" and string.sub(v, 1, 1) ~= "#" then
+                local z = p.GetThemeProperty(v, p.Themes.Dark)
+                if z ~= nil then
+                    return z
+                end
+            else
+                return v
+            end
+        end
 
-                            if not u then
-                                v.Object[x] = A
-                            else
-                                p.Tween(v.Object, 0.2, {[x] = A}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out):Play()
-                            end
-                        elseif typeof(A) == "table" and A.Color and A.Transparency then
-                            v.Object[x] = Color3.new(1, 1, 1)
+        if x ~= nil then
+            if typeof(x) == "string" and string.sub(x, 1, 1) ~= "#" then
+                return p.GetThemeProperty(x, p.Themes.Dark)
+            else
+                return getValue(r, {[r] = x})
+            end
+        end
 
-                            local B = v.Object:FindFirstChild "WindUIGradient"
-                            if not B then
-                                B = Instance.new "UIGradient"
-                                B.Name = "WindUIGradient"
-                                B.Parent = v.Object
-                            end
+        return nil
+    end
 
-                            B.Color = A.Color
-                            B.Transparency = A.Transparency
+    function p.AddThemeObject(r, u)
+        p.Objects[r] = {Object = r, Properties = u}
+        p.UpdateTheme(r, false)
+        return r
+    end
 
-                            for C, F in pairs(A) do
-                                if C ~= "Color" and C ~= "Transparency" and B[C] ~= nil then
-                                    B[C] = F
-                                end
-                            end
-                        elseif typeof(A) == "number" then
-                            if not u then
-                                v.Object[x] = A
-                            else
-                                p.Tween(v.Object, 0.2, {[x] = A}, Enum.EasingStyle.Quart, Enum.EasingDirection.Out):Play()
-                            end
-                        end
-                    else
+    function p.AddLangObject(r)
+        local u = p.LocalizationObjects[r]
+        local v = u.Object
+        local x = currentObjTranslationId
+        p.UpdateLang(v, x)
+        return v
+    end
+
+    function p.UpdateTheme(r, u)
+        local function ApplyTheme(v)
+            for x, z in pairs(v.Properties or {}) do
+                local A = p.GetThemeProperty(z, p.Theme)
+                if A ~= nil then
+                    if typeof(A) == "Color3" then
                         local B = v.Object:FindFirstChild "WindUIGradient"
                         if B then
                             B:Destroy()
                         end
-                    end
-                end
-            end
 
-            if r then
-                local v = p.Objects[r]
-                if v then
-                    ApplyTheme(v)
-                end
-            else
-                for v, x in pairs(p.Objects) do
-                    ApplyTheme(x)
-                end
-            end
-        end
+                        if not u then
+                            v.Object[x] = A
+                        else
+                            p.Tween(v.Object, 0.08, {[x] = A}):Play()
+                        end
+                    elseif typeof(A) == "table" and A.Color and A.Transparency then
+                        v.Object[x] = Color3.new(1, 1, 1)
 
-        function p.SetLangForObject(r)
-            if p.Localization and p.Localization.Enabled then
-                local u = p.LocalizationObjects[r]
-                if not u then
-                    return
-                end
+                        local B = v.Object:FindFirstChild "WindUIGradient"
+                        if not B then
+                            B = Instance.new "UIGradient"
+                            B.Name = "WindUIGradient"
+                            B.Parent = v.Object
+                        end
 
-                local v = u.Object
-                local x = u.TranslationId
+                        B.Color = A.Color
+                        B.Transparency = A.Transparency
 
-                local z = p.Localization.Translations[p.Language]
-                if z and z[x] then
-                    v.Text = z[x]
-                else
-                    local A = p.Localization and p.Localization.Translations and p.Localization.Translations.en or nil
-                    if A and A[x] then
-                        v.Text = A[x]
-                    else
-                        v.Text = "[" .. x .. "]"
-                    end
-                end
-            end
-        end
-
-        function p.ChangeTranslationKey(r, u, v)
-            if p.Localization and p.Localization.Enabled then
-                local x = string.match(v, "^" .. p.Localization.Prefix .. "(.+)")
-                if x then
-                    for z, A in ipairs(p.LocalizationObjects) do
-                        if A.Object == u then
-                            A.TranslationId = x
-                            p.SetLangForObject(z)
-                            return
+                        for C, F in pairs(A) do
+                            if C ~= "Color" and C ~= "Transparency" and B[C] ~= nil then
+                                B[C] = F
+                            end
+                        end
+                    elseif typeof(A) == "number" then
+                        if not u then
+                            v.Object[x] = A
+                        else
+                            p.Tween(v.Object, 0.08, {[x] = A}):Play()
                         end
                     end
-
-                    table.insert(
-                        p.LocalizationObjects,
-                        {
-                            TranslationId = x,
-                            Object = u
-                        }
-                    )
-                    p.SetLangForObject(#p.LocalizationObjects)
-                end
-            end
-        end
-
-        function p.UpdateLang(r)
-            if r then
-                p.Language = r
-            end
-
-            for u = 1, #p.LocalizationObjects do
-                local v = p.LocalizationObjects[u]
-                if v and v.Object and v.Object.Parent ~= nil then
-                    p.SetLangForObject(u)
                 else
-                    p.LocalizationObjects[u] = nil
-                end
-            end
-        end
-
-        function p.SetLanguage(r)
-            p.Language = r
-            p.UpdateLang()
-        end
-
-        function p.Icon(r, u)
-            return l.Icon2(r, nil, u ~= false)
-        end
-
-        function p.AddIcons(r, u)
-            return l.AddIcons(r, u)
-        end
-
-        function p.New(r, u, v)
-            local x = Instance.new(r)
-
-            for z, A in next, p.DefaultProperties[r] or {} do
-                x[z] = A
-            end
-
-            for B, C in next, u or {} do
-                if B ~= "ThemeTag" then
-                    x[B] = C
-                end
-                if p.Localization and p.Localization.Enabled and B == "Text" then
-                    local F = string.match(C, "^" .. p.Localization.Prefix .. "(.+)")
-                    if F then
-                        local G = #p.LocalizationObjects + 1
-                        p.LocalizationObjects[G] = {TranslationId = F, Object = x}
-                        p.SetLangForObject(G)
+                    local B = v.Object:FindFirstChild "WindUIGradient"
+                    if B then
+                        B:Destroy()
                     end
                 end
             end
+        end
 
+        if r then
+            local v = p.Objects[r]
             if v then
-                for F, G in next, v do
-                    G.Parent = x
+                ApplyTheme(v)
+            end
+        else
+            for v, x in pairs(p.Objects) do
+                ApplyTheme(x)
+            end
+        end
+    end
+
+    function p.SetLangForObject(r)
+        if p.Localization and p.Localization.Enabled then
+            local u = p.LocalizationObjects[r]
+            if not u then
+                return
+            end
+
+            local v = u.Object
+            local x = u.TranslationId
+
+            local z = p.Localization.Translations[p.Language]
+            if z and z[x] then
+                v.Text = z[x]
+            else
+                local A = p.Localization and p.Localization.Translations and p.Localization.Translations.en or nil
+                if A and A[x] then
+                    v.Text = A[x]
+                else
+                    v.Text = "[" .. x .. "]"
                 end
             end
+        end
+    end
 
-            if u and u.ThemeTag then
-                p.AddThemeObject(x, u.ThemeTag)
+    function p.ChangeTranslationKey(r, u, v)
+        if p.Localization and p.Localization.Enabled then
+            local x = string.match(v, "^" .. p.Localization.Prefix .. "(.+)")
+            if x then
+                for z, A in ipairs(p.LocalizationObjects) do
+                    if A.Object == u then
+                        A.TranslationId = x
+                        p.SetLangForObject(z)
+                        return
+                    end
+                end
+
+                table.insert(
+                    p.LocalizationObjects,
+                    {
+                        TranslationId = x,
+                        Object = u
+                    }
+                )
+                p.SetLangForObject(#p.LocalizationObjects)
             end
-            if u and u.FontFace then
-                p.AddFontObject(x)
-            end
-            return x
+        end
+    end
+
+    function p.UpdateLang(r)
+        if r then
+            p.Language = r
         end
 
-        function p.Tween(r, u, v, style, direction, ...)
-            return f:Create(r, TweenInfo.new(u, style or Enum.EasingStyle.Quint, direction or Enum.EasingDirection.Out, ...), v)
+        for u = 1, #p.LocalizationObjects do
+            local v = p.LocalizationObjects[u]
+            if v.Object and v.Object.Parent ~= nil then
+                p.SetLangForObject(u)
+            else
+                p.LocalizationObjects[u] = nil
+            end
+        end
+    end
+
+    function p.SetLanguage(r)
+        p.Language = r
+        p.UpdateLang()
+    end
+
+    function p.Icon(r, u)
+        return l.Icon2(r, nil, u ~= false)
+    end
+
+    function p.AddIcons(r, u)
+        return l.AddIcons(r, u)
+    end
+
+    function p.New(r, u, v)
+        local x = Instance.new(r)
+
+        for z, A in next, p.DefaultProperties[r] or {} do
+            x[z] = A
         end
 
-        function p.NewRoundFrame(r, u, v, x, B, C)
-            local function getImageForType(F)
-                return p.Shapes[F]
+        for B, C in next, u or {} do
+            if B ~= "ThemeTag" then
+                x[B] = C
+            end
+            if p.Localization and p.Localization.Enabled and B == "Text" then
+                local F = string.match(C, "^" .. p.Localization.Prefix .. "(.+)")
+                if F then
+                    local G = #p.LocalizationObjects + 1
+                    p.LocalizationObjects[G] = {TranslationId = F, Object = x}
+
+                    p.SetLangForObject(G)
+                end
+            end
+        end
+
+        for F, G in next, v or {} do
+            G.Parent = x
+        end
+
+        if u and u.ThemeTag then
+            p.AddThemeObject(x, u.ThemeTag)
+        end
+        if u and u.FontFace then
+            p.AddFontObject(x)
+        end
+        return x
+    end
+
+    function p.Tween(r, u, v, ...)
+        return f:Create(r, TweenInfo.new(u, ...), v)
+    end
+
+    function p.NewRoundFrame(r, u, v, x, B, C)
+        local function getImageForType(F)
+            return p.Shapes[F]
+        end
+
+        local function getSliceCenterForType(F)
+            return not table.find({"Shadow-sm", "Glass-0.7", "Glass-1", "Glass-1.4"}, F) and
+                Rect.new(256, 256, 256, 256) or
+                Rect.new(512, 512, 512, 512)
+        end
+
+        local F =
+            p.New(
+            B and "ImageButton" or "ImageLabel",
+            {
+                Image = getImageForType(u),
+                ScaleType = "Slice",
+                SliceCenter = getSliceCenterForType(u),
+                SliceScale = 1,
+                BackgroundTransparency = 1,
+                ThemeTag = v.ThemeTag and v.ThemeTag
+            },
+            x
+        )
+
+        for G, H in pairs(v or {}) do
+            if G ~= "ThemeTag" then
+                F[G] = H
+            end
+        end
+
+        local function UpdateSliceScale(J)
+            local L =
+                not table.find({"Shadow-sm", "Glass-0.7", "Glass-1", "Glass-1.4"}, u) and (J / (256)) or (J / 512)
+            F.SliceScale = math.max(L, 0.0001)
+        end
+
+        local J = {}
+
+        function J.SetRadius(L, M)
+            UpdateSliceScale(M)
+        end
+
+        function J.SetType(L, M)
+            u = M
+            F.Image = getImageForType(M)
+            F.SliceCenter = getSliceCenterForType(M)
+            UpdateSliceScale(r)
+        end
+
+        function J.UpdateShape(L, M, N)
+            if N then
+                u = N
+                F.Image = getImageForType(N)
+                F.SliceCenter = getSliceCenterForType(N)
+            end
+            if M then
+                r = M
+            end
+            UpdateSliceScale(r)
+        end
+
+        function J.GetRadius(L)
+            return r
+        end
+
+        function J.GetType(L)
+            return u
+        end
+
+        UpdateSliceScale(r)
+
+        return F, C and J or nil
+    end
+
+    local r = p.New
+    local u = p.Tween
+
+    function p.SetDraggable(v)
+        p.CanDraggable = v
+    end
+
+    function p.Drag(v, x, B)
+        local C
+        local F, G, H
+        local J = {
+            CanDraggable = true
+        }
+
+        if not x or typeof(x) ~= "table" then
+            x = {v}
+        end
+
+        local function update(L)
+            if not F or not J.CanDraggable then
+                return
             end
 
-            local function getSliceCenterForType(F)
-                return not table.find({"Shadow-sm", "Glass-0.7", "Glass-1", "Glass-1.4"}, F) and
-                    Rect.new(256, 256, 256, 256) or
-                    Rect.new(512, 512, 512, 512)
-            end
-
-            local F =
-                p.New(
-                B and "ImageButton" or "ImageLabel",
+            local M = L.Position - G
+            p.Tween(
+                v,
+                0.02,
                 {
-                    Image = getImageForType(u),
-                    ScaleType = "Slice",
-                    SliceCenter = getSliceCenterForType(u),
-                    SliceScale = 1,
-                    BackgroundTransparency = 1,
-                    ThemeTag = v.ThemeTag and v.ThemeTag
-                },
-                x
+                    Position = UDim2.new(H.X.Scale, H.X.Offset + M.X, H.Y.Scale, H.Y.Offset + M.Y)
+                }
+            ):Play()
+        end
+
+        for L, M in pairs(x) do
+            M.InputBegan:Connect(
+                function(N)
+                    if
+                        (N.UserInputType == Enum.UserInputType.MouseButton1 or
+                            N.UserInputType == Enum.UserInputType.Touch) and
+                            J.CanDraggable
+                     then
+                        if C == nil then
+                            C = M
+                            F = true
+                            G = N.Position
+                            H = v.Position
+
+                            if B and typeof(B) == "function" then
+                                B(true, C)
+                            end
+
+                            N.Changed:Connect(
+                                function()
+                                    if N.UserInputState == Enum.UserInputState.End then
+                                        F = false
+                                        C = nil
+
+                                        if B and typeof(B) == "function" then
+                                            B(false, nil)
+                                        end
+                                    end
+                                end
+                            )
+                        end
+                    end
+                end
             )
 
-            for G, H in pairs(v or {}) do
-                if G ~= "ThemeTag" then
-                    F[G] = H
-                end
-            end
-
-            local function UpdateSliceScale(J)
-                local L =
-                    not table.find({"Shadow-sm", "Glass-0.7", "Glass-1", "Glass-1.4"}, u) and (J / (256)) or (J / 512)
-                F.SliceScale = math.max(L, 0.0001)
-            end
-
-            local J = {}
-
-            function J.SetRadius(L, M)
-                UpdateSliceScale(M)
-            end
-
-            function J.SetType(L, M)
-                u = M
-                F.Image = getImageForType(M)
-                F.SliceCenter = getSliceCenterForType(M)
-                UpdateSliceScale(r)
-            end
-
-            function J.UpdateShape(L, M, N)
-                if N then
-                    u = N
-                    F.Image = getImageForType(N)
-                    F.SliceCenter = getSliceCenterForType(N)
-                end
-                if M then
-                    r = M
-                end
-                UpdateSliceScale(r)
-            end
-
-            function J.GetRadius(L)
-                return r
-            end
-
-            function J.GetType(L)
-                return u
-            end
-
-            UpdateSliceScale(r)
-
-            return F, C and J or nil
-        end
-
-        local r = p.New
-        local u = p.Tween
-
-        function p.SetDraggable(v)
-            p.CanDraggable = v
-        end
-
-        function p.Drag(v, x, B)
-            local dragFlag = false
-            local dragInput, dragStart, startPos
-            local J = { CanDraggable = true }
-
-            x = (typeof(x) == "table") and x or {x or v}
-
-            local function update(input)
-                local delta = input.Position - dragStart
-                local target = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-                p.Tween(v, 0.1, {Position = target}):Play()
-            end
-
-            for _, trigger in ipairs(x) do
-                trigger.InputBegan:Connect(function(input)
-                    if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and J.CanDraggable then
-                        dragFlag = true
-                        dragStart = input.Position
-                        startPos = v.Position
-                        
-                        if B then B(true) end
-
-                        input.Changed:Connect(function()
-                            if input.UserInputState == Enum.UserInputState.End then
-                                dragFlag = false
-                                if B then B(false) end
-                            end
-                        end)
+            M.InputChanged:Connect(
+                function(N)
+                    if F and C == M then
+                        if
+                            N.UserInputType == Enum.UserInputType.MouseMovement or
+                                N.UserInputType == Enum.UserInputType.Touch
+                         then
+                            update(N)
+                        end
                     end
-                end)
-
-                trigger.InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                        dragInput = input
-                    end
-                end)
-            end
-
-            e.InputChanged:Connect(function(input)
-                if dragFlag and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                    update(input)
                 end
-            end)
-
-            function J.Set(enabled) J.CanDraggable = enabled end
-            return J
+            )
         end
 
-        l.Init(r, "Icon")
+        e.InputChanged:Connect(
+            function(N)
+                if F and C ~= nil then
+                    if
+                        N.UserInputType == Enum.UserInputType.MouseMovement or
+                            N.UserInputType == Enum.UserInputType.Touch
+                     then
+                        update(N)
+                    end
+                end
+            end
+        )
 
-        function p.SanitizeFilename(v)
-            local x = v:match "([^/]+)$" or v
-            x = x:gsub("%.[^%.]+$", "")
-            x = x:gsub("[^%w%-_]", "_")
-            if #x > 50 then x = x:sub(1, 50) end
-            return x
+        function J.Set(N, O)
+            J.CanDraggable = O
         end
 
-        function p.Image(v, x, B, C, F, G, H, J)
-            C = C or "Temp"
-            x = p.SanitizeFilename(x)
+        return J
+    end
 
-            local L = r("Frame", {
+    l.Init(r, "Icon")
+
+    function p.SanitizeFilename(v)
+        local x = v:match "([^/]+)$" or v
+
+        x = x:gsub("%.[^%.]+$", "")
+
+        x = x:gsub("[^%w%-_]", "_")
+
+        if #x > 50 then
+            x = x:sub(1, 50)
+        end
+
+        return x
+    end
+
+    function p.Image(v, x, B, C, F, G, H, J)
+        C = C or "Temp"
+        x = p.SanitizeFilename(x)
+
+        local L =
+            r(
+            "Frame",
+            {
                 Size = UDim2.new(0, 0, 0, 0),
                 BackgroundTransparency = 1
-            }, {
-                r("ImageLabel", {
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    ScaleType = "Crop",
-                    ThemeTag = (p.Icon(v) or H) and {
-                        ImageColor3 = G and (J or "Icon") or nil
-                    } or nil
-                }, {
-                    r("UICorner", { CornerRadius = UDim.new(0, B) })
-                })
-            })
+            },
+            {
+                r(
+                    "ImageLabel",
+                    {
+                        Size = UDim2.new(1, 0, 1, 0),
+                        BackgroundTransparency = 1,
+                        ScaleType = "Crop",
+                        ThemeTag = (p.Icon(v) or H) and
+                            {
+                                ImageColor3 = G and (J or "Icon") or nil
+                            } or
+                            nil
+                    },
+                    {
+                        r(
+                            "UICorner",
+                            {
+                                CornerRadius = UDim.new(0, B)
+                            }
+                        )
+                    }
+                )
+            }
+        )
+        if p.Icon(v) then
+            L.ImageLabel:Destroy()
 
-            if p.Icon(v) then
-                L.ImageLabel:Destroy()
-                local M = l.Image {
-                    Icon = v,
-                    Size = UDim2.new(1, 0, 1, 0),
-                    Colors = { (G and (J or "Icon") or false), "Button" }
-                }.IconFrame
-                M.Parent = L
-            elseif string.find(v, "http") then
-                local filename = "WindUI/" .. C .. "/assets/." .. F .. "-" .. x .. ".png"
-                task.spawn(function()
-                    local success, body = pcall(function() return p.Request({Url = v, Method = "GET"}).Body end)
-                    if success then
-                        writefile(filename, body)
-                        local assetSuccess, asset = pcall(getcustomasset, filename)
-                        if assetSuccess then
-                            L.ImageLabel.Image = asset
-                        else
-                            L:Destroy()
+            local M =
+                l.Image {
+                Icon = v,
+                Size = UDim2.new(1, 0, 1, 0),
+                Colors = {
+                    (G and (J or "Icon") or false),
+                    "Button"
+                }
+            }.IconFrame
+            M.Parent = L
+        elseif string.find(v, "http") then
+            local M = "WindUI/" .. C .. "/assets/." .. F .. "-" .. x .. ".png"
+            local N, O =
+                pcall(
+                function()
+                    task.spawn(
+                        function()
+                            local N =
+                                p.Request {
+                                Url = v,
+                                Method = "GET"
+                            }.Body
+
+                            writefile(M, N)
+
+                            local O, P = pcall(getcustomasset, M)
+                            if O then
+                                L.ImageLabel.Image = P
+                            else
+                                warn(
+                                    string.format(
+                                        "[ WindUI.Creator ] Failed to load custom asset '%s': %s",
+                                        M,
+                                        tostring(P)
+                                    )
+                                )
+                                L:Destroy()
+
+                                return
+                            end
                         end
-                    else
-                        L:Destroy()
-                    end
-                end)
-            elseif v == "" then
-                L.Visible = false
-            else
-                L.ImageLabel.Image = v
+                    )
+                end
+            )
+            if not N then
+                warn(
+                    "[ WindUI.Creator ]  '" .. identifyexecutor() .. "' doesnt support the URL Images. Error: " .. O
+                )
+
+                L:Destroy()
             end
-
-            return L
+        elseif v == "" then
+            L.Visible = false
+        else
+            L.ImageLabel.Image = v
         end
 
-        function p.Color3ToHSB(v)
-            local r, g, b = v.R, v.G, v.B
-            local max, min = math.max(r, g, b), math.min(r, g, b)
-            local del = max - min
-            local h = 0
-            if del ~= 0 then
-                if max == r then h = (g - b) / del % 6
-                elseif max == g then h = (b - r) / del + 2
-                else h = (r - g) / del + 4 end
-                h = h * 60
-            end
-            return { h = math.floor(h + 0.5), s = (max == 0 and 0 or del / max), b = max }
-        end
-
-        function p.GetPerceivedBrightness(v)
-            return 0.299 * v.R + 0.587 * v.G + 0.114 * v.B
-        end
-
-        function p.GetTextColorForHSB(v, x)
-            local hsb = p.Color3ToHSB(v)
-            if p.GetPerceivedBrightness(v) > (x or 0.5) then
-                return Color3.fromHSV(hsb.h / 360, 0, 0.05)
-            else
-                return Color3.fromHSV(hsb.h / 360, 0, 0.98)
-            end
-        end
-
-        function p.GetAverageColor(v)
-            local r, g, b = 0, 0, 0
-            local keys = v.Color.Keypoints
-            for _, k in ipairs(keys) do
-                r, g, b = r + k.Value.R, g + k.Value.G, b + k.Value.B
-            end
-            return Color3.new(r / #keys, g / #keys, b / #keys)
-        end
-
-        function p.GenerateUniqueID()
-            return h:GenerateGUID(false)
-        end
-
-        return p
+        return L
     end
+
+    function p.Color3ToHSB(v)
+        local x, B, C = v.R, v.G, v.B
+        local F = math.max(x, B, C)
+        local G = math.min(x, B, C)
+        local H = F - G
+
+        local J = 0
+        if H ~= 0 then
+            if F == x then
+                J = (B - C) / H % 6
+            elseif F == B then
+                J = (C - x) / H + 2
+            else
+                J = (x - B) / H + 4
+            end
+            J = J * 60
+        else
+            J = 0
+        end
+
+        local L = (F == 0) and 0 or (H / F)
+        local M = F
+
+        return {
+            h = math.floor(J + 0.5),
+            s = L,
+            b = M
+        }
+    end
+
+    function p.GetPerceivedBrightness(v)
+        local x = v.R
+        local B = v.G
+        local C = v.B
+        return 0.299 * x + 0.587 * B + 0.114 * C
+    end
+
+    function p.GetTextColorForHSB(v, x)
+        local B = p.Color3ToHSB(v)
+        local C, F, G = B.h, B.s, B.b
+        if p.GetPerceivedBrightness(v) > (x or 0.5) then
+            return Color3.fromHSV(C / 360, 0, 0.05)
+        else
+            return Color3.fromHSV(C / 360, 0, 0.98)
+        end
+    end
+
+    function p.GetAverageColor(v)
+        local x, B, C = 0, 0, 0
+        local F = v.Color.Keypoints
+        for G, H in ipairs(F) do
+            x = x + H.Value.R
+            B = B + H.Value.G
+            C = C + H.Value.B
+        end
+        local J = #F
+        return Color3.new(x / J, B / J, C / J)
+    end
+
+    function p.GenerateUniqueID(v)
+        return h:GenerateGUID(false)
+    end
+
+    return p
+end
     function a.c()
         local b = {}
 
