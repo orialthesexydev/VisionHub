@@ -12556,9 +12556,6 @@ do
         local ap = a.load "v".New
         local aq = a.load "w"
         local ar = a.load "x"
-        local blurEffect = Instance.new("BlurEffect")
-        blurEffect.Size = 0
-        blurEffect.Parent = ah
         return function(as)
             local au = {
                 Title = as.Title or "UI Library",
@@ -12573,7 +12570,7 @@ do
                 BackgroundImageTransparency = as.BackgroundImageTransparency or 0,
                 ShadowTransparency = as.ShadowTransparency or 0.7,
                 User = as.User or {},
-                Footer = as.Footer or {Height = 30, Text = ""},
+                Footer = as.Footer or {Enabled = false, Height = 30, Text = "Footer Text"},
                 Topbar = as.Topbar or {Height = 52, ButtonsType = "Default"},
                 Size = as.Size,
                 MinSize = as.MinSize or Vector2.new(560, 350),
@@ -12618,7 +12615,11 @@ do
                 ElementConfig = {},
                 PendingFlags = {},
                 IsToggleDragging = false,
-                SideBarVisible = true
+                SideBarVisible = true,
+                IntroEnabled = as.IntroEnabled or false,
+                IntroText = as.IntroText or "Loading...",
+                IntroIcon = as.IntroIcon,
+                SnapThreshold = 50
             }
             au.UICorner = au.Radius
             au.ElementConfig = {
@@ -12751,7 +12752,7 @@ do
                         0,
                         au.SideBarWidth,
                         1,
-                        (au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height) - au.Footer.Height
+                        au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height - (au.Footer.Enabled and au.Footer.Height or 0)
                     ),
                     Position = UDim2.new(0, 0, 0, au.Topbar.Height),
                     BackgroundTransparency = 1,
@@ -12778,8 +12779,8 @@ do
                 al(
                 "Frame",
                 {
-                    Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - au.Footer.Height),
-                    Position = UDim2.new(1, 0, 1, -au.Footer.Height),
+                    Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - (au.Footer.Enabled and au.Footer.Height or 0)),
+                    Position = UDim2.new(1, 0, 1, 0),
                     AnchorPoint = Vector2.new(1, 1),
                     BackgroundTransparency = 1
                 },
@@ -12995,7 +12996,7 @@ do
                     am(
                         au.UIElements.SideBarContainer,
                         .25,
-                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2) - au.Footer.Height)},
+                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2) - (au.Footer.Enabled and au.Footer.Height or 0))},
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
                     ):Play()
@@ -13006,7 +13007,7 @@ do
                     am(
                         au.UIElements.SideBarContainer,
                         .25,
-                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - au.Footer.Height)},
+                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - (au.Footer.Enabled and au.Footer.Height or 0))},
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
                     ):Play()
@@ -13116,7 +13117,7 @@ do
                     }
                 )
                 aF:Play()
-            elseif d and au.Folder then
+            elseif d then
                 local f = au.Folder .. "/assets/." .. ak.SanitizeFilename(d) .. GetImageExtension(d)
                 if not isfile(f) then
                     local g, h =
@@ -13139,7 +13140,7 @@ do
                     end
                 )
                 if not g then
-                    warn("[ WindUI.Window.Background ] Failed to load custom asset: " .. tostring(h))
+                    warn "[ WindUI.Window.Background ] Failed to load custom asset: " .. tostring(h)
                     return
                 end
                 aF =
@@ -13249,10 +13250,6 @@ do
                     }
                 }
             )
-            local UIStroke = al("UIStroke", {
-                Transparency = 1,
-                ThemeTag = {Color = "Border"}
-            })
             au.UIElements.Main =
                 al(
                 "Frame",
@@ -13439,36 +13436,47 @@ do
                                 }
                             )
                         }
-                    ),
-                    al(
-                        "Frame",
-                        {
-                            Size = UDim2.new(1, 0, 0, au.Footer.Height),
-                            Position = UDim2.new(0, 0, 1, 0),
-                            AnchorPoint = Vector2.new(0, 1),
-                            BackgroundTransparency = 1,
-                            Name = "Footer"
-                        },
-                        {
-                            al(
-                                "TextLabel",
-                                {
-                                    Text = au.Footer.Text,
-                                    FontFace = Font.new(ak.Font, Enum.FontWeight.Regular),
-                                    TextSize = 14,
-                                    ThemeTag = {
-                                        TextColor3 = "Text"
-                                    },
-                                    BackgroundTransparency = 1,
-                                    Size = UDim2.new(1, 0, 1, 0),
-                                    Position = UDim2.new(0, au.UIPadding, 0, 0)
-                                }
-                            )
-                        }
                     )
                 }
             )
-            UIStroke.Parent = au.UIElements.Main.Background
+            if au.Footer.Enabled then
+                au.UIElements.Footer = al(
+                    "Frame",
+                    {
+                        Size = UDim2.new(1, 0, 0, au.Footer.Height),
+                        Position = UDim2.new(0, 0, 1, 0),
+                        AnchorPoint = Vector2.new(0, 1),
+                        BackgroundTransparency = 1,
+                        BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+                        Name = "Footer"
+                    },
+                    {
+                        al(
+                            "TextLabel",
+                            {
+                                Text = au.Footer.Text,
+                                FontFace = Font.new(ak.Font, Enum.FontWeight.Regular),
+                                BackgroundTransparency = 1,
+                                TextTransparency = 0.5,
+                                TextSize = 14,
+                                Size = UDim2.new(1, 0, 1, 0),
+                                TextXAlignment = "Center",
+                                ThemeTag = {
+                                    TextColor3 = "Text"
+                                }
+                            }
+                        ),
+                        al(
+                            "UIPadding",
+                            {
+                                PaddingLeft = UDim.new(0, au.UIPadding),
+                                PaddingRight = UDim.new(0, au.UIPadding)
+                            }
+                        )
+                    }
+                )
+                au.UIElements.Footer.Parent = au.UIElements.Main.Main
+            end
             ak.AddSignal(
                 au.UIElements.Main.Main.Topbar.Left:GetPropertyChangedSignal "AbsoluteSize",
                 function()
@@ -13646,25 +13654,6 @@ do
                 )
                 return C
             end
-            local function snapPosition()
-                if au.IsFullscreen then return end
-                local absPos = au.UIElements.Main.AbsolutePosition
-                local size = au.UIElements.Main.AbsoluteSize
-                local viewport = ah.ViewportSize
-                local snapThreshold = 20
-                local newX = absPos.X
-                local newY = absPos.Y
-                if absPos.X < snapThreshold then newX = 0
-                elseif viewport.X - (absPos.X + size.X) < snapThreshold then newX = viewport.X - size.X
-                end
-                if absPos.Y < snapThreshold then newY = 0
-                elseif viewport.Y - (absPos.Y + size.Y) < snapThreshold then newY = viewport.Y - size.Y
-                end
-                if newX ~= absPos.X or newY ~= absPos.Y then
-                    am(au.UIElements.Main, 0.2, {Position = UDim2.new(0, newX, 0, newY)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-                    au.Position = UDim2.new(0, newX, 0, newY)
-                end
-            end
             local l =
                 ak.Drag(
                 au.UIElements.Main,
@@ -13675,12 +13664,29 @@ do
                             am(f, .1, {ImageTransparency = .35}):Play()
                         else
                             am(f, .2, {ImageTransparency = .8}):Play()
+                            if not l then
+                                local viewport = ah.ViewportSize
+                                local pos = au.UIElements.Main.Position
+                                local size = au.UIElements.Main.Size
+                                local newPos = pos
+                                if pos.X.Offset < au.SnapThreshold then
+                                    newPos = UDim2.new(pos.X.Scale, 0, pos.Y.Scale, pos.Y.Offset)
+                                elseif viewport.X - (pos.X.Offset + size.X.Offset) < au.SnapThreshold then
+                                    newPos = UDim2.new(pos.X.Scale, viewport.X - size.X.Offset, pos.Y.Scale, pos.Y.Offset)
+                                end
+                                if pos.Y.Offset < au.SnapThreshold then
+                                    newPos = UDim2.new(newPos.X.Scale, newPos.X.Offset, newPos.Y.Scale, 0)
+                                elseif viewport.Y - (pos.Y.Offset + size.Y.Offset) < au.SnapThreshold then
+                                    newPos = UDim2.new(newPos.X.Scale, newPos.X.Offset, newPos.Y.Scale, viewport.Y - size.Y.Offset)
+                                end
+                                if newPos ~= pos then
+                                    am(au.UIElements.Main, 0.2, {Position = newPos}, Enum.EasingStyle.Quint):Play()
+                                    au.Position = newPos
+                                end
+                            end
                         end
                         au.Position = au.UIElements.Main.Position
                         au.Dragging = l
-                        if not l then
-                            snapPosition()
-                        end
                     end
                 end
             )
@@ -13861,6 +13867,40 @@ do
             function au.Open(r)
                 task.spawn(
                     function()
+                        if au.IntroEnabled then
+                            local introFrame = al("Frame", {
+                                Size = UDim2.new(1, 0, 1, 0),
+                                BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+                                BackgroundTransparency = 0.5,
+                                ZIndex = 1000,
+                                Parent = au.UIElements.Main
+                            })
+                            local introLabel = al("TextLabel", {
+                                Text = au.IntroText,
+                                FontFace = Font.new(ak.Font, Enum.FontWeight.Bold),
+                                TextSize = 24,
+                                TextColor3 = Color3.fromRGB(255, 255, 255),
+                                BackgroundTransparency = 1,
+                                Position = UDim2.new(0.5, 0, 0.5, 0),
+                                AnchorPoint = Vector2.new(0.5, 0.5),
+                                Parent = introFrame
+                            })
+                            if au.IntroIcon then
+                                local introIcon = al("ImageLabel", {
+                                    Image = au.IntroIcon,
+                                    Size = UDim2.new(0, 50, 0, 50),
+                                    Position = UDim2.new(0.5, 0, 0.5, -40),
+                                    AnchorPoint = Vector2.new(0.5, 0.5),
+                                    BackgroundTransparency = 1,
+                                    Parent = introFrame
+                                })
+                            end
+                            am(introFrame, 0.5, {BackgroundTransparency = 0}, Enum.EasingStyle.Quint):Play()
+                            task.wait(2)
+                            am(introFrame, 0.5, {BackgroundTransparency = 1}, Enum.EasingStyle.Quint):Play()
+                            task.wait(0.5)
+                            introFrame:Destroy()
+                        end
                         if au.OnOpenCallback then
                             task.spawn(
                                 function()
@@ -13957,7 +13997,6 @@ do
                                 task.wait(.05)
                                 au.UIElements.Main:WaitForChild "Main".Visible = true
                                 as.WindUI:ToggleAcrylic(true)
-                                am(blurEffect, 0.25, {Size = 24}, Enum.EasingStyle.Quint):Play()
                             end
                         )
                     end
@@ -13972,8 +14011,15 @@ do
                         end
                     )
                 end
+                if au.Folder then
+                    local state = {
+                        Position = {au.Position.X.Scale, au.Position.X.Offset, au.Position.Y.Scale, au.Position.Y.Offset},
+                        Size = {au.Size.X.Scale, au.Size.X.Offset, au.Size.Y.Scale, au.Size.Y.Offset},
+                        IsFullscreen = au.IsFullscreen
+                    }
+                    writefile("WindUI/" .. au.Folder .. "/windowstate.txt", game:GetService("HttpService"):JSONEncode(state))
+                end
                 as.WindUI:ToggleAcrylic(false)
-                am(blurEffect, 0.25, {Size = 0}, Enum.EasingStyle.Quint):Play()
                 au.UIElements.Main:WaitForChild "Main".Visible = false
                 au.CanDropdown = false
                 au.Closed = true
@@ -14061,7 +14107,6 @@ do
                             if au.AcrylicPaint and au.AcrylicPaint.Model then
                                 au.AcrylicPaint.Model:Destroy()
                             end
-                            blurEffect:Destroy()
                             au.Destroyed = true
                             task.wait(0.4)
                             as.WindUI.ScreenGui:Destroy()
@@ -14161,6 +14206,18 @@ do
                     local N = 0.05
                     if math.abs(L - M) > N then
                         au:SetUIScale(L)
+                    end
+                end
+            end
+            if au.Folder then
+                local stateFile = "WindUI/" .. au.Folder .. "/windowstate.txt"
+                if isfile(stateFile) then
+                    local state = game:GetService("HttpService"):JSONDecode(readfile(stateFile))
+                    au.Position = UDim2.new(state.Position[1], state.Position[2], state.Position[3], state.Position[4])
+                    au.Size = UDim2.new(state.Size[1], state.Size[2], state.Size[3], state.Size[4])
+                    au.IsFullscreen = state.IsFullscreen
+                    if au.IsFullscreen then
+                        au:ToggleFullscreen()
                     end
                 end
             end
@@ -14597,7 +14654,6 @@ do
                             if handle.ImageLabel then
                                 am(handle.ImageLabel, 0.1, {ImageTransparency = 0.8}):Play()
                             end
-                            snapPosition()
                         end
                     end)
                 end
@@ -14730,71 +14786,69 @@ do
                     end
                 end
             end
-            local divider = al("Frame", {
-                Size = UDim2.new(0, 4, 1, -au.Topbar.Height - au.Footer.Height),
-                Position = UDim2.new(0, au.SideBarWidth, 0, au.Topbar.Height),
-                BackgroundTransparency = 0.5,
-                BackgroundColor3 = Color3.fromRGB(100,100,100),
-                Name = "Divider"
-            })
-            divider.Parent = au.UIElements.Main.Main
-            divider.Visible = true
-            local isDraggingDivider = false
-            local initialMouseX
-            local initialWidth
-            ak.AddSignal(divider.InputBegan, function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    isDraggingDivider = true
-                    initialMouseX = input.Position.X
-                    initialWidth = au.SideBarWidth
-                end
-            end)
-            ak.AddSignal(ae.InputChanged, function(input)
-                if isDraggingDivider and input.UserInputType == Enum.UserInputType.MouseMovement then
-                    local delta = input.Position.X - initialMouseX
-                    local newWidth = math.clamp(initialWidth + delta, 100, 400)
-                    au.SideBarWidth = newWidth
-                    au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)
-                    divider.Position = UDim2.new(0, newWidth, divider.Position.Y.Scale, divider.Position.Y.Offset)
-                    au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height - au.Footer.Height)
-                    if au.User.Enabled then
-                        aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), aB.Size.Y.Scale, aB.Size.Y.Offset)
-                    end
-                    au.UIElements.SideBar.Size = UDim2.new(1, au.ScrollBarEnabled and -3 - (au.UIPadding / 2) or 0, au.UIElements.SideBar.Size.Y.Scale, au.UIElements.SideBar.Size.Y.Offset)
-                end
-            end)
-            ak.AddSignal(ae.InputEnded, function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    isDraggingDivider = false
-                end
-            end)
-            ak.AddSignal(divider.MouseEnter, function()
-                mouse.Icon = "rbxasset://SystemCursors/SizeWE"
-            end)
-            ak.AddSignal(divider.MouseLeave, function()
-                mouse.Icon = ""
-            end)
             function au.ToggleSidebar(r)
                 au.SideBarVisible = not au.SideBarVisible
                 local targetWidth = au.SideBarVisible and au.SideBarWidth or 0
                 if au.SideBarVisible then
                     au.UIElements.SideBarContainer.Visible = true
-                    divider.Visible = true
                 end
                 local tween = am(au.UIElements.SideBarContainer, 0.25, {Size = UDim2.new(0, targetWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-                local tween2 = am(divider, 0.25, {Position = UDim2.new(0, targetWidth, 0, au.Topbar.Height)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
-                tween2:Play()
                 local conn = rs.Heartbeat:Connect(function()
-                    au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - au.Footer.Height)
+                    au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - (au.Footer.Enabled and au.Footer.Height or 0))
                 end)
                 tween:Play()
                 tween.Completed:Wait()
                 conn:Disconnect()
-                au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth, 1, -au.Topbar.Height - au.Footer.Height)
+                au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth, 1, -au.Topbar.Height - (au.Footer.Enabled and au.Footer.Height or 0))
                 if not au.SideBarVisible then
                     au.UIElements.SideBarContainer.Visible = false
-                    divider.Visible = false
                 end
+            end
+            function au.MakeNotification(options)
+                local notification = al("Frame", {
+                    Size = UDim2.new(0, 300, 0, 80),
+                    Position = UDim2.new(1, 10, 1, -90),
+                    AnchorPoint = Vector2.new(1, 1),
+                    BackgroundTransparency = 0.1,
+                    BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+                    Parent = as.WindUI.NotificationGui
+                }, {
+                    al("UICorner", {CornerRadius = UDim.new(0, 8)}),
+                    al("TextLabel", {
+                        Text = options.Title or "Notification",
+                        FontFace = Font.new(ak.Font, Enum.FontWeight.Bold),
+                        TextSize = 18,
+                        TextColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0, 10, 0, 10)
+                    }),
+                    al("TextLabel", {
+                        Text = options.Content or "Content",
+                        FontFace = Font.new(ak.Font, Enum.FontWeight.Regular),
+                        TextSize = 14,
+                        TextColor3 = Color3.fromRGB(200, 200, 200),
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0, 10, 0, 35),
+                        Size = UDim2.new(1, -20, 0, 35),
+                        TextWrapped = true
+                    })
+                })
+                if options.Image then
+                    al("ImageLabel", {
+                        Image = options.Image,
+                        Size = UDim2.new(0, 30, 0, 30),
+                        Position = UDim2.new(1, -40, 0, 25),
+                        AnchorPoint = Vector2.new(1, 0.5),
+                        BackgroundTransparency = 1,
+                        Parent = notification
+                    })
+                end
+                am(notification, 0.3, {Position = UDim2.new(1, -10, 1, -90)}, Enum.EasingStyle.Quint):Play()
+                task.delay(options.Time or 5, function()
+                    am(notification, 0.3, {Position = UDim2.new(1, 10, 1, -90)}, Enum.EasingStyle.Quint):Play()
+                    task.wait(0.3)
+                    notification:Destroy()
+                end)
             end
             return au
         end
