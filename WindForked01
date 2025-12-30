@@ -10719,149 +10719,145 @@ do
 
         return ah
     end
-    function a.multisection_element()
-        local aa = a.load "b" -- Creator/Helper functions
+    function a.AA() -- New Module for MultiSection logic
+        local aa = a.load "b"
         local ab = aa.New
         local ac = aa.Tween
-        local ad = a.load "U" -- Element Loader Module
 
-        local ae = {}
-
-        function ae.New(af, ag)
-            local ah = {
-                __type = "Multisection",
+        return function(ad)
+            local ae = {
+                __type = "MultiSection",
                 Tabs = {},
                 CurrentTab = nil,
-                Index = ag.Index,
-                Container = nil
+                Sections = {},
+                UIElements = {}
             }
 
-            -- Main Element Background (Following the library's design)
-            local ai = aa.NewRoundFrame(
-                ag.Window.ElementConfig.UICorner,
+            -- Main Container Frame
+            local af = aa.NewRoundFrame(
+                ad.Window.ElementConfig.UICorner,
                 "Squircle",
                 {
                     Size = UDim2.new(1, 0, 0, 0),
                     AutomaticSize = "Y",
-                    ThemeTag = { ImageColor3 = "ElementBackground" },
-                    ImageTransparency = 0.95,
-                    Parent = ag.Parent
-                },
-                {
-                    ab("UIListLayout", { Padding = UDim.new(0, 0), SortOrder = "LayoutOrder" }),
-                    ab("UIPadding", { PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8) })
+                    BackgroundTransparency = 1,
+                    Parent = ad.Parent,
+                    ThemeTag = {
+                        ImageColor3 = "SectionBoxBackground",
+                        ImageTransparency = "SectionBoxBackgroundTransparency"
+                    }
                 }
             )
 
-            -- Tab Selection Bar (Top)
-            local aj = ab("Frame", {
-                Size = UDim2.new(1, 0, 0, 32),
+            -- Tab Buttons Holder
+            local ag = ab("Frame", {
+                Size = UDim2.new(1, 0, 0, 38),
                 BackgroundTransparency = 1,
-                Name = "TabHeader",
-                Parent = ai
+                Parent = af
             }, {
                 ab("UIListLayout", {
                     FillDirection = "Horizontal",
-                    Padding = UDim.new(0, 5),
-                    HorizontalAlignment = "Center"
+                    Padding = UDim.new(0, 1),
+                    SortOrder = "LayoutOrder"
                 }),
-                ab("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) })
+                ab("Frame", { -- Selection Indicator (Line)
+                    Name = "Indicator",
+                    Size = UDim2.new(0, 0, 0, 2),
+                    Position = UDim2.new(0, 0, 1, -2),
+                    ThemeTag = { BackgroundColor3 = "Primary" },
+                    ZIndex = 5
+                })
             })
 
-            -- Main Content Holder
-            local ak = ab("Frame", {
+            -- Content Container (where elements of sub-tabs go)
+            local ah = ab("Frame", {
                 Size = UDim2.new(1, 0, 0, 0),
                 AutomaticSize = "Y",
                 BackgroundTransparency = 1,
-                Name = "TabContent",
-                Parent = ai
-            }, {
-                ab("UIListLayout", { Padding = UDim.new(0, 6), HorizontalAlignment = "Center" }),
-                ab("UIPadding", { 
-                    PaddingTop = UDim.new(0, 8), 
-                    PaddingLeft = UDim.new(0, 10), 
-                    PaddingRight = UDim.new(0, 10), 
-                    PaddingBottom = UDim.new(0, 5) 
-                })
+                Parent = af,
+                Position = UDim2.new(0, 0, 0, 40)
             })
 
-            ah.ElementFrame = ai
-
-            -- Logic to add a sub-tab
-            function ah.AddTab(al, am)
-                local an = {
-                    Title = am or "Tab",
-                    Elements = {}
+            function ae.CreateSubTab(ai, aj)
+                local ak = {
+                    Name = aj,
+                    Container = ab("Frame", {
+                        Size = UDim2.new(1, 0, 0, 0),
+                        AutomaticSize = "Y",
+                        BackgroundTransparency = 1,
+                        Visible = false,
+                        Parent = ah
+                    }, {
+                        ab("UIListLayout", {
+                            Padding = UDim.new(0, ad.Tab.Gap),
+                            SortOrder = "LayoutOrder"
+                        }),
+                        ab("UIPadding", {
+                            PaddingTop = UDim.new(0, 8),
+                            PaddingBottom = UDim.new(0, 8),
+                            PaddingLeft = UDim.new(0, ad.Window.ElementConfig.UIPadding),
+                            PaddingRight = UDim.new(0, ad.Window.ElementConfig.UIPadding)
+                        })
+                    })
                 }
 
-                -- The Tab Content Container
-                local ao = ab("Frame", {
-                    Size = UDim2.new(1, 0, 0, 0),
-                    AutomaticSize = "Y",
-                    BackgroundTransparency = 1,
-                    Visible = false,
-                    Parent = ak
-                }, {
-                    ab("UIListLayout", { Padding = UDim.new(0, 6), HorizontalAlignment = "Center" })
-                })
-
-                -- The Tab Selector Button
-                local ap = ab("TextButton", {
+                local al = ab("TextButton", {
                     Size = UDim2.new(0, 0, 1, 0),
                     AutomaticSize = "X",
                     BackgroundTransparency = 1,
-                    Text = an.Title,
-                    FontFace = Font.new(aa.Font, Enum.FontWeight.Medium),
+                    Text = aj,
+                    FontFace = Font.new(aa.Font, Enum.FontWeight.SemiBold),
                     TextSize = 14,
                     ThemeTag = { TextColor3 = "Text" },
-                    TextTransparency = 0.4,
-                    Parent = aj
+                    Parent = ag
                 }, {
-                    ab("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) }),
-                    ab("Frame", { -- Indicator line
-                        Size = UDim2.new(1, 0, 0, 2),
-                        Position = UDim2.new(0, 0, 1, 0),
-                        ThemeTag = { BackgroundColor3 = "Primary" },
-                        BorderSizePixel = 0,
-                        BackgroundTransparency = 1,
-                        Name = "Indicator"
-                    })
+                    ab("UIPadding", { PaddingLeft = UDim.new(0, 15), PaddingRight = UDim.new(0, 15) })
                 })
 
-                local function selectSubTab()
-                    if ah.CurrentTab == an then return end
-                    
-                    for _, tab in pairs(ah.Tabs) do
-                        tab.Container.Visible = false
-                        ac(tab.Button, 0.2, { TextTransparency = 0.4 }):Play()
-                        ac(tab.Button.Indicator, 0.2, { BackgroundTransparency = 1 }):Play()
-                    end
+                -- Switching Logic
+                al.MouseButton1Click:Connect(function()
+                    ae:SetTab(aj)
+                end)
 
-                    ah.CurrentTab = an
-                    ao.Visible = true
-                    ac(ap, 0.2, { TextTransparency = 0 }):Play()
-                    ac(ap.Indicator, 0.2, { BackgroundTransparency = 0 }):Play()
-                end
-
-                ap.MouseButton1Click:Connect(selectSubTab)
-
-                an.Container = ao
-                an.Button = ap
-                table.insert(ah.Tabs, an)
-
-                -- Initialize Element Loading for this sub-tab
-                ad.Load(an, ao, ad.Elements, ag.Window, ag.WindUI, nil, ad, ag.UIScale, ag.Tab)
-
-                -- Select first tab by default
-                if #ah.Tabs == 1 then selectSubTab() end
-
-                return an
+                ae.Sections[aj] = ak
+                ae.Tabs[aj] = { Button = al, Container = ak.Container }
+                
+                -- Wrap the container to allow .AddToggle etc.
+                local am = a.load "U"
+                am.Load(ak, ak.Container, am.Elements, ad.Window, ad.WindUI, nil, am, ad.UIScale, ad.Tab)
+                
+                return ak
             end
 
-            return "Multisection", ah
-        end
+            function ae.SetTab(ai, aj)
+                for name, tab in pairs(ae.Tabs) do
+                    local isTarget = (name == aj)
+                    tab.Container.Visible = isTarget
+                    ac(tab.Button, 0.2, { TextTransparency = isTarget and 0 or 0.5 }):Play()
+                    
+                    if isTarget then
+                        -- Move indicator
+                        ac(ag.Indicator, 0.25, {
+                            Size = UDim2.new(0, tab.Button.AbsoluteSize.X, 0, 2),
+                            Position = UDim2.new(0, tab.Button.AbsolutePosition.X - ag.AbsolutePosition.X, 1, -2)
+                        }, Enum.EasingStyle.Quint):Play()
+                    end
+                end
+                ae.CurrentTab = aj
+            end
 
-        return ae
+            for _, tabName in ipairs(ad.Sections or {"Default"}) do
+                ae.CreateSubTab(tabName)
+            end
+
+            task.spawn(function()
+                task.wait()
+                ae:SetTab(ad.Sections[1] or "Default")
+            end)
+
+            ae.ElementFrame = af
+            return ae
+        end
     end
     function a.R()
         local aa = a.load "b"
@@ -11049,7 +11045,7 @@ do
                 Space = a.load "R",
                 Image = a.load "S",
                 Group = a.load "T",
-                Multisection = a.load "multisection_element"
+                MultiSection = a.load "AA"
             },
             Load = function(aa, ae, af, ah, aj, ak, al, am, an)
                 for ao, ap in next, af do
