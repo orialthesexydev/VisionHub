@@ -13246,6 +13246,10 @@ do
                     }
                 }
             )
+            local UIStroke = al("UIStroke", {
+                Transparency = 1,
+                ThemeTag = {Color = "Border"}
+            })
             au.UIElements.Main =
                 al(
                 "Frame",
@@ -13435,6 +13439,7 @@ do
                     )
                 }
             )
+            UIStroke.Parent = au.UIElements.Main.Background
             ak.AddSignal(
                 au.UIElements.Main.Main.Topbar.Left:GetPropertyChangedSignal "AbsoluteSize",
                 function()
@@ -13612,6 +13617,25 @@ do
                 )
                 return C
             end
+            local function snapPosition()
+                if au.IsFullscreen then return end
+                local absPos = au.UIElements.Main.AbsolutePosition
+                local size = au.UIElements.Main.AbsoluteSize
+                local viewport = ah.ViewportSize
+                local snapThreshold = 20
+                local newX = absPos.X
+                local newY = absPos.Y
+                if absPos.X < snapThreshold then newX = 0
+                elseif viewport.X - (absPos.X + size.X) < snapThreshold then newX = viewport.X - size.X
+                end
+                if absPos.Y < snapThreshold then newY = 0
+                elseif viewport.Y - (absPos.Y + size.Y) < snapThreshold then newY = viewport.Y - size.Y
+                end
+                if newX ~= absPos.X or newY ~= absPos.Y then
+                    am(au.UIElements.Main, 0.2, {Position = UDim2.new(0, newX, 0, newY)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+                    au.Position = UDim2.new(0, newX, 0, newY)
+                end
+            end
             local l =
                 ak.Drag(
                 au.UIElements.Main,
@@ -13625,6 +13649,9 @@ do
                         end
                         au.Position = au.UIElements.Main.Position
                         au.Dragging = l
+                        if not l then
+                            snapPosition()
+                        end
                     end
                 end
             )
@@ -14538,6 +14565,7 @@ do
                             if handle.ImageLabel then
                                 am(handle.ImageLabel, 0.1, {ImageTransparency = 0.8}):Play()
                             end
+                            snapPosition()
                         end
                     end)
                 end
@@ -14670,13 +14698,60 @@ do
                     end
                 end
             end
+            local divider = al("Frame", {
+                Size = UDim2.new(0, 4, 1, -au.Topbar.Height),
+                Position = UDim2.new(0, au.SideBarWidth, 0, au.Topbar.Height),
+                BackgroundTransparency = 0.5,
+                BackgroundColor3 = Color3.fromRGB(100,100,100),
+                Name = "Divider"
+            })
+            divider.Parent = au.UIElements.Main.Main
+            divider.Visible = true
+            local isDraggingDivider = false
+            local initialMouseX
+            local initialWidth
+            ak.AddSignal(divider.InputBegan, function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isDraggingDivider = true
+                    initialMouseX = input.Position.X
+                    initialWidth = au.SideBarWidth
+                end
+            end)
+            ak.AddSignal(ae.InputChanged, function(input)
+                if isDraggingDivider and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    local delta = input.Position.X - initialMouseX
+                    local newWidth = math.clamp(initialWidth + delta, 100, 400)
+                    au.SideBarWidth = newWidth
+                    au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)
+                    divider.Position = UDim2.new(0, newWidth, divider.Position.Y.Scale, divider.Position.Y.Offset)
+                    au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height)
+                    if au.User.Enabled then
+                        aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), aB.Size.Y.Scale, aB.Size.Y.Offset)
+                    end
+                    au.UIElements.SideBar.Size = UDim2.new(1, au.ScrollBarEnabled and -3 - (au.UIPadding / 2) or 0, au.UIElements.SideBar.Size.Y.Scale, au.UIElements.SideBar.Size.Y.Offset)
+                end
+            end)
+            ak.AddSignal(ae.InputEnded, function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isDraggingDivider = false
+                end
+            end)
+            ak.AddSignal(divider.MouseEnter, function()
+                mouse.Icon = "rbxasset://SystemCursors/SizeWE"
+            end)
+            ak.AddSignal(divider.MouseLeave, function()
+                mouse.Icon = ""
+            end)
             function au.ToggleSidebar(r)
                 au.SideBarVisible = not au.SideBarVisible
                 local targetWidth = au.SideBarVisible and au.SideBarWidth or 0
                 if au.SideBarVisible then
                     au.UIElements.SideBarContainer.Visible = true
+                    divider.Visible = true
                 end
                 local tween = am(au.UIElements.SideBarContainer, 0.25, {Size = UDim2.new(0, targetWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+                local tween2 = am(divider, 0.25, {Position = UDim2.new(0, targetWidth, 0, au.Topbar.Height)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+                tween2:Play()
                 local conn = rs.Heartbeat:Connect(function()
                     au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height)
                 end)
@@ -14686,6 +14761,7 @@ do
                 au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth, 1, -au.Topbar.Height)
                 if not au.SideBarVisible then
                     au.UIElements.SideBarContainer.Visible = false
+                    divider.Visible = false
                 end
             end
             return au
