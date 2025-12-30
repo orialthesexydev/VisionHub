@@ -8007,7 +8007,7 @@ do
         local af = ac(game:GetService "Players").LocalPlayer:GetMouse()
         local ag = ac(game:GetService "Workspace").CurrentCamera
 
-        local ah = workspace.CurrentCamera
+        local ah = Workspace.CurrentCamera
 
         local ai = a.load "l".New
 
@@ -8767,7 +8767,7 @@ do
         local ah = a.load "u".New
         local ai = a.load "l".New
         local aj = a.load "K".New
-        local ak = workspace.CurrentCamera
+        local ak = Workspace.CurrentCamera
 
         local al = {
             UICorner = 10,
@@ -8904,7 +8904,7 @@ do
             },
             rbx = {
                 "game",
-                "workspace",
+                "Workspace",
                 "script",
                 "math",
                 "string",
@@ -12546,7 +12546,7 @@ do
     local rs = aa(game:GetService "RunService")
     local af = aa(game:GetService "Players")
     local mouse = af.LocalPlayer:GetMouse()
-    local ah = workspace.CurrentCamera
+    local ah = Workspace.CurrentCamera
     local aj = a.load "r"
     local ak = a.load "b"
     local al = ak.New
