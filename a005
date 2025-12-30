@@ -12445,42 +12445,45 @@ do
     local http = aa(game:GetService "HttpService")
     return function(as)
         local au = {
-            Title = as.Title or "UI Library",
+            Title = as.Title or "Gaming Automation Dashboard",
             Author = as.Author,
             Icon = as.Icon,
             IconSize = as.IconSize or 22,
             IconThemed = as.IconThemed,
-            IconRadius = as.IconRadius or 0,
+            IconRadius = as.IconRadius or 8,  -- Rounded icons
             Folder = as.Folder,
             Resizable = as.Resizable ~= false,
-            Background = as.Background,
+            Background = {  -- Subtle gradient for cyberpunk depth
+                Color = ColorSequence.new(Color3.fromRGB(0,0,0), Color3.fromRGB(30,30,30)),
+                Rotation = 90
+            },
             BackgroundImageTransparency = as.BackgroundImageTransparency or 0,
             ShadowTransparency = as.ShadowTransparency or 0.7,
             User = as.User or {},
             Footer = as.Footer or {Enabled = false, Height = 40, Text = ""},
             Topbar = as.Topbar or {Height = 52, ButtonsType = "Default"},
-            Size = as.Size,
+            Size = as.Size or UDim2.new(0, 850, 0, 560),
             MinSize = as.MinSize or Vector2.new(560, 350),
-            MaxSize = as.MaxSize or Vector2.new(850, 560),
+            MaxSize = as.MaxSize or Vector2.new(1200, 800),  -- Larger max for desktop
             TopBarButtonIconSize = as.TopBarButtonIconSize or 16,
             ToggleKey = as.ToggleKey,
-            ElementsRadius = as.ElementsRadius,
+            ElementsRadius = as.ElementsRadius or 8,  -- Rounded elements
             Radius = as.Radius or 16,
             Transparent = as.Transparent or false,
             HideSearchBar = as.HideSearchBar ~= false,
             ScrollBarEnabled = as.ScrollBarEnabled or false,
-            SideBarWidth = as.SideBarWidth or 200,
-            SideBarMinWidth = as.SideBarMinWidth or 100,
+            SideBarWidth = as.SideBarWidth or 220,  -- Wider for icons + labels
+            SideBarMinWidth = as.SideBarMinWidth or 150,
             SideBarMaxWidth = as.SideBarMaxWidth or 400,
-            Acrylic = as.Acrylic or false,
-            NewElements = as.NewElements or false,
+            Acrylic = true,  -- Enable blur for soft backgrounds
+            NewElements = as.NewElements or true,  -- Use new rounded styles
             IgnoreAlerts = as.IgnoreAlerts or false,
             HidePanelBackground = as.HidePanelBackground or false,
             AutoScale = as.AutoScale ~= false,
             OpenButton = as.OpenButton,
             Position = UDim2.new(0.5, 0, 0.5, 0),
             UICorner = nil,
-            UIPadding = 14,
+            UIPadding = 16,  -- Increased for accessible spacing
             UIElements = {},
             CanDropdown = true,
             Closed = false,
@@ -12498,22 +12501,22 @@ do
             OnCloseCallback = nil,
             OnDestroyCallback = nil,
             IsPC = false,
-            Gap = 5,
+            Gap = 8,  -- Increased gap for premium feel
             TopBarButtons = {},
             AllElements = {},
             ElementConfig = {},
             PendingFlags = {},
             IsToggleDragging = false,
-            KeepAspect = as.KeepAspect or false,
+            KeepAspect = as.KeepAspect or true,  -- Lock aspect for better resizing
             SnapEnabled = as.SnapEnabled or true,
             Tabs = {}
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
-            UIPadding = (au.NewElements and 10 or 13),
-            UICorner = au.ElementsRadius or (au.NewElements and 23 or 12)
+            UIPadding = au.UIPadding,
+            UICorner = au.ElementsRadius
         }
-        local av = au.Size or UDim2.new(0, 580, 0, 460)
+        local av = au.Size or UDim2.new(0, 850, 0, 560)  -- Default larger for dashboard
         au.Size =
             UDim2.new(
             av.X.Scale,
@@ -12522,7 +12525,7 @@ do
             math.clamp(av.Y.Offset, au.MinSize.Y, au.MaxSize.Y)
         )
         if au.Topbar == {} then
-            au.Topbar = {Height = 52, ButtonsType = "Default"}
+            au.Topbar = {Height = 60, ButtonsType = "Default"}  -- Taller topbar for premium feel
         end
         if au.Folder then
             if not isfolder("WindUI/" .. au.Folder) then
@@ -12684,10 +12687,13 @@ do
                     -au.Topbar.Height - userHeight - footerHeight
                 ),
                 Position = UDim2.new(0, 0, 0, au.Topbar.Height),
-                BackgroundTransparency = 1,
+                BackgroundTransparency = 0.95,  -- Soft blur effect
+                BackgroundColor3 = Color3.fromRGB(30, 30, 30),  -- Charcoal
                 Visible = true
             },
             {
+                al("UICorner", {CornerRadius = UDim.new(0, 8)}),  -- Rounded sidebar
+                al("UIStroke", {Color = Color3.fromRGB(255, 45, 45), Transparency = 0.9}),  -- Subtle red border
                 al(
                     "Frame",
                     {
@@ -13145,7 +13151,7 @@ do
                 "TextLabel",
                 {
                     Text = g,
-                    FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
+                    FontFace = Font.new("GothamSSm", Enum.FontWeight.Medium),  -- Updated typography
                     BackgroundTransparency = 1,
                     TextTransparency = 0.35,
                     AutomaticSize = "XY",
@@ -13170,7 +13176,7 @@ do
             "TextLabel",
             {
                 Text = au.Title,
-                FontFace = Font.new(ak.Font, Enum.FontWeight.SemiBold),
+                FontFace = Font.new("GothamSSm", Enum.FontWeight.SemiBold),  -- Updated typography
                 BackgroundTransparency = 1,
                 AutomaticSize = "XY",
                 Name = "Title",
@@ -13196,7 +13202,7 @@ do
                     "TextLabel",
                     {
                         Text = au.Footer.Text,
-                        FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
+                        FontFace = Font.new("GothamSSm", Enum.FontWeight.Medium),
                         BackgroundTransparency = 1,
                         AutomaticSize = "XY",
                         TextXAlignment = "Left",
@@ -13284,7 +13290,7 @@ do
                             {
                                 Size = UDim2.new(1, 0, 0, au.Topbar.Height),
                                 BackgroundTransparency = 1,
-                                BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+                                BackgroundColor3 = Color3.fromRGB(30, 30, 30),  -- Charcoal topbar
                                 Name = "Topbar"
                             },
                             {
@@ -14714,6 +14720,7 @@ do
         return au
     end
 end
+
 end
 local aa = {
     Window = nil,
