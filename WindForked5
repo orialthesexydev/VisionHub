@@ -12545,7 +12545,6 @@ do
     local ae = aa(game:GetService "UserInputService")
     local rs = aa(game:GetService "RunService")
     local af = aa(game:GetService "Players")
-    local st = aa(game:GetService "Stats")
     local mouse = af.LocalPlayer:GetMouse()
     local ah = Workspace.CurrentCamera
     local aj = a.load "r"
@@ -12622,13 +12621,7 @@ do
             IsInteractable = true,
             IsPinned = false,
             SidebarAutoHoover = false,
-            CurrentAccent = Color3.fromRGB(0, 120, 255),
-            -- New Advanced Properties
-            PanicKey = as.PanicKey or nil,
-            IsMinimized = false,
-            MinimizedSize = nil,
-            ShowStats = as.ShowStats or false,
-            ThemeAnimationSpeed = 0.3
+            CurrentAccent = Color3.fromRGB(0, 120, 255)
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
@@ -13285,26 +13278,6 @@ do
             }
         )
 
-        local statsLabel = 
-            al(
-            "TextLabel",
-            {
-                Text = "0 FPS | 0 MS",
-                FontFace = Font.new(ak.Font, Enum.FontWeight.Bold),
-                BackgroundTransparency = 1,
-                AutomaticSize = "XY",
-                Name = "PerformanceStats",
-                TextXAlignment = "Left",
-                TextSize = 10,
-                LayoutOrder = 4,
-                Visible = false,
-                TextTransparency = 0.4,
-                ThemeTag = {
-                    TextColor3 = "Text"
-                }
-            }
-        )
-
         local j =
             al(
             "TextLabel",
@@ -13457,8 +13430,7 @@ do
                                                             }
                                                         ),
                                                         j,
-                                                        statusIndicator,
-                                                        statsLabel
+                                                        statusIndicator
                                                     }
                                                 ),
                                                 g
@@ -13865,23 +13837,6 @@ do
             )
         end
 
-        function au.ToggleStats(m, bool)
-            au.ShowStats = bool
-            statsLabel.Visible = bool
-            if bool and not au._StatsLoop then
-                au._StatsLoop = true
-                task.spawn(function()
-                    while au.ShowStats and not au.Destroyed do
-                        local fps = math.floor(st.FrameTime * 1000 > 0 and 1/st.FrameTime or 0)
-                        local ping = math.floor(af.LocalPlayer:GetNetworkPing() * 2000)
-                        statsLabel.Text = string.format("%d FPS | %d MS", fps, ping)
-                        task.wait(1)
-                    end
-                    au._StatsLoop = false
-                end)
-            end
-        end
-
         function au.UpdateAccent(m, color)
             au.CurrentAccent = color
             statusIndicator.TextColor3 = color
@@ -13967,26 +13922,6 @@ do
             )
         end
 
-        function au.ToggleMinimize(m)
-            if au.IsFullscreen then au:ToggleFullscreen() end
-            au.IsMinimized = not au.IsMinimized
-            
-            if au.IsMinimized then
-                au.MinimizedSize = au.UIElements.Main.Size
-                au.CanResize = false
-                au.UIElements.Main:WaitForChild "Main".Visible = false
-                am(au.UIElements.Main, 0.3, {Size = UDim2.new(au.MinimizedSize.X.Scale, au.MinimizedSize.X.Offset, 0, au.Topbar.Height)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-                am(au.UIElements.Main.Background, 0.3, {Size = UDim2.new(1,0,0, au.Topbar.Height)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-            else
-                am(au.UIElements.Main, 0.3, {Size = au.MinimizedSize}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-                am(au.UIElements.Main.Background, 0.3, {Size = UDim2.new(1,0,1,0)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-                task.delay(0.2, function()
-                    au.UIElements.Main:WaitForChild "Main".Visible = true
-                    if au.Resizable then au.CanResize = true end
-                end)
-            end
-        end
-
         local m
         local p
         ak.Icon "minimize"
@@ -14033,7 +13968,7 @@ do
             "Minimize",
             "minus",
             function()
-                au:ToggleMinimize()
+                au:Close()
             end,
             (au.Topbar.ButtonsType == "Default" and 997 or 998),
             nil,
@@ -14178,7 +14113,6 @@ do
                             task.wait(.05)
                             au.UIElements.Main:WaitForChild "Main".Visible = true
                             as.WindUI:ToggleAcrylic(true)
-                            if au.ShowStats then au:ToggleStats(true) end
                         end
                     )
                 end
@@ -14413,9 +14347,6 @@ do
                     if r.KeyCode == au.ToggleKey then
                         au:Toggle()
                     end
-                end
-                if au.PanicKey and r.KeyCode == au.PanicKey then
-                    au:Close():Destroy()
                 end
             end
         )
