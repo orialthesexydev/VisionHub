@@ -12543,11 +12543,11 @@ do
                 return aa
             end)
         local ae = aa(game:GetService "UserInputService")
+        local http = aa(game:GetService "HttpService")
         local rs = aa(game:GetService "RunService")
         local af = aa(game:GetService "Players")
         local mouse = af.LocalPlayer:GetMouse()
         local ah = workspace.CurrentCamera
-        local httpService = aa(game:GetService "HttpService")
         local aj = a.load "r"
         local ak = a.load "b"
         local al = ak.New
@@ -12571,7 +12571,7 @@ do
                 BackgroundImageTransparency = as.BackgroundImageTransparency or 0,
                 ShadowTransparency = as.ShadowTransparency or 0.7,
                 User = as.User or {},
-                Footer = as.Footer or {Enabled = false, Height = 30, Text = ""},
+                Footer = as.Footer or {},
                 Topbar = as.Topbar or {Height = 52, ButtonsType = "Default"},
                 Size = as.Size,
                 MinSize = as.MinSize or Vector2.new(560, 350),
@@ -12584,6 +12584,10 @@ do
                 HideSearchBar = as.HideSearchBar ~= false,
                 ScrollBarEnabled = as.ScrollBarEnabled or false,
                 SideBarWidth = as.SideBarWidth or 200,
+                SplitterEnabled = as.SplitterEnabled ~= false,
+                SplitterWidth = 3,
+                MinSideBarWidth = 100,
+                MaxSideBarWidth = 400,
                 Acrylic = as.Acrylic or false,
                 NewElements = as.NewElements or false,
                 IgnoreAlerts = as.IgnoreAlerts or false,
@@ -12616,8 +12620,7 @@ do
                 ElementConfig = {},
                 PendingFlags = {},
                 IsToggleDragging = false,
-                SideBarVisible = true,
-                SnapThreshold = 20
+                SideBarVisible = true
             }
             au.UICorner = au.Radius
             au.ElementConfig = {
@@ -12648,19 +12651,18 @@ do
                 if not isfolder(au.Folder .. "/assets") then
                     makefolder(au.Folder .. "/assets")
                 end
+                local configFile = "WindUI/" .. au.Folder .. "/window.json"
+                if isfile(configFile) then
+                    local data = http:JSONDecode(readfile(configFile))
+                    au.Position = UDim2.new(data.Position[1], data.Position[2], data.Position[3], data.Position[4])
+                    au.Size = UDim2.new(data.Size[1], data.Size[2], data.Size[3], data.Size[4])
+                end
             end
             local aw =
                 al(
                 "UICorner",
                 {
                     CornerRadius = UDim.new(0, au.UICorner)
-                }
-            )
-            local UIStroke = al(
-                "UIStroke",
-                {
-                    Transparency = 1,
-                    ThemeTag = {Color = "WindowBorder"}
                 }
             )
             if au.Folder then
@@ -12749,8 +12751,6 @@ do
                     )
                 }
             )
-            local footerHeight = au.Footer.Enabled and au.Footer.Height + au.UIPadding or 0
-            local userHeight = au.User.Enabled and 42 + (au.UIPadding * 2) or 0
             au.UIElements.SideBarContainer =
                 al(
                 "Frame",
@@ -12759,7 +12759,7 @@ do
                         0,
                         au.SideBarWidth,
                         1,
-                        -au.Topbar.Height - userHeight - footerHeight
+                        au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height
                     ),
                     Position = UDim2.new(0, 0, 0, au.Topbar.Height),
                     BackgroundTransparency = 1,
@@ -12782,13 +12782,26 @@ do
             if au.ScrollBarEnabled then
                 ap(au.UIElements.SideBar, au.UIElements.SideBarContainer.Content, au, 3)
             end
+            if au.SplitterEnabled then
+                au.UIElements.Splitter =
+                    al(
+                    "Frame",
+                    {
+                        Size = UDim2.new(0, au.SplitterWidth, 1, -au.Topbar.Height),
+                        Position = UDim2.new(0, au.SideBarWidth, 0, au.Topbar.Height),
+                        BackgroundTransparency = 0.8,
+                        ThemeTag = { BackgroundColor3 = "Text" },
+                        Name = "Splitter"
+                    }
+                )
+            end
             au.UIElements.MainBar =
                 al(
                 "Frame",
                 {
-                    Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - footerHeight),
-                    Position = UDim2.new(1, 0, 0, au.Topbar.Height),
-                    AnchorPoint = Vector2.new(1, 0),
+                    Size = UDim2.new(1, -au.SideBarWidth - (au.SplitterEnabled and au.SplitterWidth or 0), 1, -au.Topbar.Height),
+                    Position = UDim2.new(1, 0, 1, 0),
+                    AnchorPoint = Vector2.new(1, 1),
                     BackgroundTransparency = 1
                 },
                 {
@@ -12860,7 +12873,7 @@ do
                             0,
                             42 + (au.UIPadding)
                         ),
-                        Position = UDim2.new(0, au.UIPadding / 2, 1, -(au.UIPadding / 2) - footerHeight),
+                        Position = UDim2.new(0, au.UIPadding / 2, 1, -(au.UIPadding / 2)),
                         AnchorPoint = Vector2.new(0, 1),
                         BackgroundTransparency = 1,
                         Visible = au.User.Enabled or false
@@ -13003,7 +13016,7 @@ do
                     am(
                         au.UIElements.SideBarContainer,
                         .25,
-                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2) - footerHeight)},
+                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2))},
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
                     ):Play()
@@ -13014,7 +13027,7 @@ do
                     am(
                         au.UIElements.SideBarContainer,
                         .25,
-                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - footerHeight)},
+                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height)},
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
                     ):Play()
@@ -13124,7 +13137,7 @@ do
                     }
                 )
                 aF:Play()
-            elseif d then
+            elseif d and au.Folder then
                 local f = au.Folder .. "/assets/." .. ak.SanitizeFilename(d) .. GetImageExtension(d)
                 if not isfile(f) then
                     local g, h =
@@ -13147,7 +13160,7 @@ do
                     end
                 )
                 if not g then
-                    warn("[ Window.Background ] Failed to load custom asset: " .. tostring(h))
+                    warn("[ WindUI.Window.Background ] Failed to load custom asset: " .. tostring(h))
                     return
                 end
                 aF =
@@ -13198,7 +13211,7 @@ do
                     ImageTransparency = .8,
                     ImageColor3 = Color3.new(1, 1, 1),
                     Size = UDim2.new(0, 0, 0, 4),
-                    Position = UDim2.new(0.5, 0, 1, 4 - footerHeight),
+                    Position = UDim2.new(0.5, 0, 1, 4),
                     AnchorPoint = Vector2.new(0.5, 0)
                 },
                 {
@@ -13310,6 +13323,7 @@ do
                                     CornerRadius = UDim.new(0, au.UICorner)
                                 }
                             ),
+                            au.SplitterEnabled and au.UIElements.Splitter or nil,
                             au.UIElements.SideBarContainer,
                             au.UIElements.MainBar,
                             aB,
@@ -13446,49 +13460,6 @@ do
                     )
                 }
             )
-            local footer = al(
-                "Frame",
-                {
-                    Size = UDim2.new(1, 0, 0, au.Footer.Height),
-                    Position = UDim2.new(0, 0, 1, 0),
-                    AnchorPoint = Vector2.new(0, 1),
-                    BackgroundTransparency = 0.95,
-                    ThemeTag = {
-                        BackgroundColor3 = "WindowBackground"
-                    },
-                    Visible = au.Footer.Enabled,
-                    Name = "Footer"
-                },
-                {
-                    al(
-                        "TextLabel",
-                        {
-                            Text = au.Footer.Text,
-                            FontFace = Font.new(ak.Font, Enum.FontWeight.Regular),
-                            BackgroundTransparency = 1,
-                            TextSize = 13,
-                            TextXAlignment = "Left",
-                            ThemeTag = {
-                                TextColor3 = "Text"
-                            },
-                            Size = UDim2.new(1, 0, 1, 0),
-                            Name = "StatusLabel"
-                        }
-                    ),
-                    al(
-                        "UIPadding",
-                        {
-                            PaddingLeft = UDim.new(0, au.UIPadding),
-                            PaddingRight = UDim.new(0, au.UIPadding)
-                        }
-                    )
-                }
-            )
-            footer.Parent = au.UIElements.Main.Main
-            function au.SetStatus(text)
-                au.Footer.Text = text
-                footer.StatusLabel.Text = text
-            end
             ak.AddSignal(
                 au.UIElements.Main.Main.Topbar.Left:GetPropertyChangedSignal "AbsoluteSize",
                 function()
@@ -13679,28 +13650,6 @@ do
                         end
                         au.Position = au.UIElements.Main.Position
                         au.Dragging = l
-                        if not l then
-                            local threshold = au.SnapThreshold
-                            local screen = ah.ViewportSize
-                            local pos = au.UIElements.Main.Position
-                            local size = au.UIElements.Main.Size
-                            local newPos = pos
-                            if pos.X.Offset < threshold then
-                                newPos = UDim2.new(newPos.X.Scale, 0, newPos.Y.Scale, newPos.Y.Offset)
-                            elseif pos.X.Offset + size.X.Offset > screen.X - threshold then
-                                newPos = UDim2.new(newPos.X.Scale, screen.X - size.X.Offset, newPos.Y.Scale, newPos.Y.Offset)
-                            end
-                            if pos.Y.Offset < threshold then
-                                newPos = UDim2.new(newPos.X.Scale, newPos.X.Offset, newPos.Y.Scale, 0)
-                            elseif pos.Y.Offset + size.Y.Offset > screen.Y - threshold then
-                                newPos = UDim2.new(newPos.X.Scale, newPos.X.Offset, newPos.Y.Scale, screen.Y - size.Y.Offset)
-                            end
-                            if newPos ~= pos then
-                                am(au.UIElements.Main, 0.2, {Position = newPos}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-                                au.Position = newPos
-                            end
-                            au:SaveState()
-                        end
                     end
                 end
             )
@@ -13983,6 +13932,13 @@ do
                 )
             end
             function au.Close(r)
+                if au.Folder then
+                    local data = {
+                        Position = {au.Position.X.Scale, au.Position.X.Offset, au.Position.Y.Scale, au.Position.Y.Offset},
+                        Size = {au.Size.X.Scale, au.Size.X.Offset, au.Size.Y.Scale, au.Size.Y.Offset}
+                    }
+                    writefile("WindUI/" .. au.Folder .. "/window.json", http:JSONEncode(data))
+                end
                 local u = {}
                 if au.OnCloseCallback then
                     task.spawn(
@@ -14202,25 +14158,6 @@ do
                     end
                 end
             )
-            function au.SaveState()
-                if au.Folder then
-                    local state = {
-                        Position = {au.Position.X.Scale, au.Position.X.Offset, au.Position.Y.Scale, au.Position.Y.Offset},
-                        Size = {au.Size.X.Scale, au.Size.X.Offset, au.Size.Y.Scale, au.Size.Y.Offset}
-                    }
-                    writefile("WindUI/" .. au.Folder .. "/state.json", httpService:JSONEncode(state))
-                end
-            end
-            function au.LoadState()
-                if au.Folder and isfile("WindUI/" .. au.Folder .. "/state.json") then
-                    local state = httpService:JSONDecode(readfile("WindUI/" .. au.Folder .. "/state.json"))
-                    au.Position = UDim2.new(state.Position[1], state.Position[2], state.Position[3], state.Position[4])
-                    au.Size = UDim2.new(state.Size[1], state.Size[2], state.Size[3], state.Size[4])
-                    au.UIElements.Main.Position = au.Position
-                    au.UIElements.Main.Size = au.Size
-                end
-            end
-            au:LoadState()
             task.spawn(
                 function()
                     au:Open()
@@ -14633,7 +14570,6 @@ do
                             if handle.ImageLabel then
                                 am(handle.ImageLabel, 0.1, {ImageTransparency = 0.8}):Play()
                             end
-                            au:SaveState()
                         end
                     end)
                 end
@@ -14774,15 +14710,60 @@ do
                 end
                 local tween = am(au.UIElements.SideBarContainer, 0.25, {Size = UDim2.new(0, targetWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
                 local conn = rs.Heartbeat:Connect(function()
-                    au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - footerHeight)
+                    au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X - (au.SplitterEnabled and au.SplitterWidth or 0), 1, -au.Topbar.Height)
+                    if au.SplitterEnabled then
+                        au.UIElements.Splitter.Position = UDim2.new(0, au.UIElements.SideBarContainer.AbsoluteSize.X, 0, au.Topbar.Height)
+                    end
                 end)
                 tween:Play()
                 tween.Completed:Wait()
                 conn:Disconnect()
-                au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth, 1, -au.Topbar.Height - footerHeight)
+                au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth - (au.SplitterEnabled and au.SplitterWidth or 0), 1, -au.Topbar.Height)
+                if au.SplitterEnabled then
+                    au.UIElements.Splitter.Position = UDim2.new(0, targetWidth, 0, au.Topbar.Height)
+                end
                 if not au.SideBarVisible then
                     au.UIElements.SideBarContainer.Visible = false
                 end
+            end
+            if au.SplitterEnabled then
+                ak.AddSignal(au.UIElements.Splitter.MouseEnter, function() mouse.Icon = "rbxasset://SystemCursors/SizeWE" end)
+                ak.AddSignal(au.UIElements.Splitter.MouseLeave, function() mouse.Icon = "" end)
+                local isSplitterResizing = false
+                local initialSplitterPos
+                ak.AddSignal(
+                    au.UIElements.Splitter.InputBegan,
+                    function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            isSplitterResizing = true
+                            initialSplitterPos = input.Position.X
+                            ay.Active = true
+                            am(ay, 0.1, {ImageTransparency = 0.7}):Play()
+                            input.Changed:Connect(function()
+                                if input.UserInputState == Enum.UserInputState.End then
+                                    isSplitterResizing = false
+                                    ay.Active = false
+                                    am(ay, 0.1, {ImageTransparency = 1}):Play()
+                                end
+                            end)
+                        end
+                    end
+                )
+                ak.AddSignal(
+                    ae.InputChanged,
+                    function(input)
+                        if isSplitterResizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+                            local delta = input.Position.X - initialSplitterPos
+                            local newWidth = au.SideBarWidth + delta
+                            newWidth = math.clamp(newWidth, au.MinSideBarWidth, au.MaxSideBarWidth)
+                            au.SideBarWidth = newWidth
+                            au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)
+                            au.UIElements.Splitter.Position = UDim2.new(0, newWidth, 0, au.Topbar.Height)
+                            au.UIElements.MainBar.Size = UDim2.new(1, -newWidth - au.SplitterWidth, 1, -au.Topbar.Height)
+                            initialSplitterPos = input.Position.X
+                        end
+                    end
+                )
             end
             return au
         end
