@@ -12456,7 +12456,7 @@ do
             BackgroundImageTransparency = as.BackgroundImageTransparency or 0,
             ShadowTransparency = as.ShadowTransparency or 0.7,
             User = as.User or {},
-            Footer = as.Footer or {},
+            Footer = as.Footer or {Enabled = false, Height = 40, Text = ""},
             Topbar = as.Topbar or {Height = 52, ButtonsType = "Default"},
             Size = as.Size,
             MinSize = as.MinSize or Vector2.new(560, 350),
@@ -12500,7 +12500,10 @@ do
             AllElements = {},
             ElementConfig = {},
             PendingFlags = {},
-            IsToggleDragging = false
+            IsToggleDragging = false,
+            KeepAspect = as.KeepAspect or false,
+            SnapEnabled = as.SnapEnabled or true,
+            Tabs = {}
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
@@ -12665,6 +12668,8 @@ do
                 )
             }
         )
+        local userHeight = au.User.Enabled and 42 + au.UIPadding or 0
+        local footerHeight = au.Footer.Enabled and au.Footer.Height or 0
         au.UIElements.SideBarContainer =
             al(
             "Frame",
@@ -12673,7 +12678,7 @@ do
                     0,
                     au.SideBarWidth,
                     1,
-                    au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height
+                    -au.Topbar.Height - userHeight - footerHeight
                 ),
                 Position = UDim2.new(0, 0, 0, au.Topbar.Height),
                 BackgroundTransparency = 1,
@@ -12700,8 +12705,8 @@ do
             al(
             "Frame",
             {
-                Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height),
-                Position = UDim2.new(1, 0, 1, 0),
+                Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - footerHeight),
+                Position = UDim2.new(1, 0, 1, -footerHeight),
                 AnchorPoint = Vector2.new(1, 1),
                 BackgroundTransparency = 1
             },
@@ -12917,7 +12922,7 @@ do
                 am(
                     au.UIElements.SideBarContainer,
                     .25,
-                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2))},
+                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2) - footerHeight)},
                     Enum.EasingStyle.Quint,
                     Enum.EasingDirection.Out
                 ):Play()
@@ -12928,7 +12933,7 @@ do
                 am(
                     au.UIElements.SideBarContainer,
                     .25,
-                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height)},
+                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - footerHeight)},
                     Enum.EasingStyle.Quint,
                     Enum.EasingDirection.Out
                 ):Play()
@@ -13062,7 +13067,7 @@ do
             )
             if not g then
                 warn("[ Window.Background ] Failed to load custom asset: " .. tostring(h))
-                return
+                    return
             end
             aF =
                 al(
@@ -13169,6 +13174,40 @@ do
                 ThemeTag = {
                     TextColor3 = "WindowTopbarTitle"
                 }
+            }
+        )
+        local footer = al(
+            "Frame",
+            {
+                Size = UDim2.new(1, 0, 0, footerHeight),
+                Position = UDim2.new(0, 0, 1, 0),
+                AnchorPoint = Vector2.new(0, 1),
+                BackgroundTransparency = 1,
+                Name = "Footer",
+                Visible = au.Footer.Enabled
+            },
+            {
+                al(
+                    "TextLabel",
+                    {
+                        Text = au.Footer.Text,
+                        FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
+                        BackgroundTransparency = 1,
+                        AutomaticSize = "XY",
+                        TextXAlignment = "Left",
+                        TextSize = 14,
+                        ThemeTag = {
+                            TextColor3 = "Text"
+                        }
+                    }
+                ),
+                al(
+                    "UIPadding",
+                    {
+                        PaddingLeft = UDim.new(0, au.UIPadding),
+                        PaddingRight = UDim.new(0, au.UIPadding)
+                    }
+                )
             }
         )
         au.UIElements.Main =
@@ -13356,7 +13395,8 @@ do
                                     }
                                 )
                             }
-                        )
+                        ),
+                        footer
                     }
                 )
             }
@@ -13551,6 +13591,36 @@ do
                     end
                     au.Position = au.UIElements.Main.Position
                     au.Dragging = l
+                    if not l then
+                        if au.SnapEnabled then
+                            local screenSize = ah.ViewportSize
+                            local win = au.UIElements.Main
+                            local pos = win.Position
+                            local size = win.Size
+                            local threshold = 20
+                            local halfX = size.X.Offset / 2
+                            local halfY = size.Y.Offset / 2
+                            local centerX = pos.X.Scale * screenSize.X + pos.X.Offset
+                            local centerY = pos.Y.Scale * screenSize.Y + pos.Y.Offset
+                            local newCenterX = centerX
+                            local newCenterY = centerY
+                            if math.abs(centerX - halfX) < threshold then
+                                newCenterX = halfX
+                            elseif math.abs(centerX + halfX - screenSize.X) < threshold then
+                                newCenterX = screenSize.X - halfX
+                            end
+                            if math.abs(centerY - halfY) < threshold then
+                                newCenterY = halfY
+                            elseif math.abs(centerY + halfY - screenSize.Y) < threshold then
+                                newCenterY = screenSize.Y - halfY
+                            end
+                            if newCenterX ~= centerX or newCenterY ~= centerY then
+                                local newPos = UDim2.new(0, newCenterX, 0, newCenterY)
+                                am(win, 0.2, {Position = newPos}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+                                au.Position = newPos
+                            end
+                        end
+                    end
                 end
             end
         )
@@ -14039,6 +14109,13 @@ do
                         au:Toggle()
                     end
                 end
+                if not au.Closed and au.CanDropdown then
+                    if r.KeyCode == Enum.KeyCode.Right then
+                        au:NextTab()
+                    elseif r.KeyCode == Enum.KeyCode.Left then
+                        au:PrevTab()
+                    end
+                end
             end
         )
         task.spawn(
@@ -14063,10 +14140,28 @@ do
         au.TabModule = v
         function au.Tab(x, B)
             B.Parent = au.UIElements.SideBar.Frame
-            return v.New(B, as.WindUI.UIScale)
+            local tab = v.New(B, as.WindUI.UIScale)
+            table.insert(au.Tabs, tab)
+            return tab
         end
         function au.SelectTab(x, B)
             v:SelectTab(B)
+        end
+        function au.NextTab()
+            local currentIndex = table.find(au.Tabs, au.CurrentTab)
+            if currentIndex then
+                local nextIndex = currentIndex + 1
+                if nextIndex > #au.Tabs then nextIndex = 1 end
+                v:SelectTab(au.Tabs[nextIndex])
+            end
+        end
+        function au.PrevTab()
+            local currentIndex = table.find(au.Tabs, au.CurrentTab)
+            if currentIndex then
+                local nextIndex = currentIndex - 1
+                if nextIndex < 1 then nextIndex = #au.Tabs end
+                v:SelectTab(au.Tabs[nextIndex])
+            end
         end
         function au.Section(x, B)
             return u.New(B, au.UIElements.SideBar.Frame, au.Folder, as.WindUI.UIScale, au)
@@ -14383,6 +14478,11 @@ do
                     if isResizing and au.CanResize then
                         local C = B.Position - initialInputPosition
                         local F = UDim2.new(0, initialSize.X.Offset + C.X * 2, 0, initialSize.Y.Offset + C.Y * 2)
+                        if au.KeepAspect then
+                            local initialRatio = initialSize.X.Offset / initialSize.Y.Offset
+                            local newY = F.X.Offset / initialRatio
+                            F = UDim2.new(0, F.X.Offset, 0, newY)
+                        end
                         F =
                             UDim2.new(
                             F.X.Scale,
@@ -14407,7 +14507,7 @@ do
         local F
         local G = 0
         function onDoubleClick()
-            au:SetToTheCenter()
+            au:ToggleFullscreen()
         end
         f.Frame.MouseButton1Up:Connect(
             function()
