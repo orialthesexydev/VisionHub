@@ -12556,6 +12556,9 @@ do
         local ap = a.load "v".New
         local aq = a.load "w"
         local ar = a.load "x"
+        local blurEffect = Instance.new("BlurEffect")
+        blurEffect.Size = 0
+        blurEffect.Parent = ah
         return function(as)
             local au = {
                 Title = as.Title or "UI Library",
@@ -12570,7 +12573,7 @@ do
                 BackgroundImageTransparency = as.BackgroundImageTransparency or 0,
                 ShadowTransparency = as.ShadowTransparency or 0.7,
                 User = as.User or {},
-                Footer = as.Footer or {},
+                Footer = as.Footer or {Height = 30, Text = ""},
                 Topbar = as.Topbar or {Height = 52, ButtonsType = "Default"},
                 Size = as.Size,
                 MinSize = as.MinSize or Vector2.new(560, 350),
@@ -12748,7 +12751,7 @@ do
                         0,
                         au.SideBarWidth,
                         1,
-                        au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height
+                        (au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height) - au.Footer.Height
                     ),
                     Position = UDim2.new(0, 0, 0, au.Topbar.Height),
                     BackgroundTransparency = 1,
@@ -12775,8 +12778,8 @@ do
                 al(
                 "Frame",
                 {
-                    Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height),
-                    Position = UDim2.new(1, 0, 1, 0),
+                    Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - au.Footer.Height),
+                    Position = UDim2.new(1, 0, 1, -au.Footer.Height),
                     AnchorPoint = Vector2.new(1, 1),
                     BackgroundTransparency = 1
                 },
@@ -12992,7 +12995,7 @@ do
                     am(
                         au.UIElements.SideBarContainer,
                         .25,
-                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2))},
+                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2) - au.Footer.Height)},
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
                     ):Play()
@@ -13003,7 +13006,7 @@ do
                     am(
                         au.UIElements.SideBarContainer,
                         .25,
-                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height)},
+                        {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - au.Footer.Height)},
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
                     ):Play()
@@ -13433,6 +13436,32 @@ do
                                             PaddingBottom = UDim.new(0, au.UIPadding)
                                         }
                                     )
+                                }
+                            )
+                        }
+                    ),
+                    al(
+                        "Frame",
+                        {
+                            Size = UDim2.new(1, 0, 0, au.Footer.Height),
+                            Position = UDim2.new(0, 0, 1, 0),
+                            AnchorPoint = Vector2.new(0, 1),
+                            BackgroundTransparency = 1,
+                            Name = "Footer"
+                        },
+                        {
+                            al(
+                                "TextLabel",
+                                {
+                                    Text = au.Footer.Text,
+                                    FontFace = Font.new(ak.Font, Enum.FontWeight.Regular),
+                                    TextSize = 14,
+                                    ThemeTag = {
+                                        TextColor3 = "Text"
+                                    },
+                                    BackgroundTransparency = 1,
+                                    Size = UDim2.new(1, 0, 1, 0),
+                                    Position = UDim2.new(0, au.UIPadding, 0, 0)
                                 }
                             )
                         }
@@ -13928,6 +13957,7 @@ do
                                 task.wait(.05)
                                 au.UIElements.Main:WaitForChild "Main".Visible = true
                                 as.WindUI:ToggleAcrylic(true)
+                                am(blurEffect, 0.25, {Size = 24}, Enum.EasingStyle.Quint):Play()
                             end
                         )
                     end
@@ -13943,6 +13973,7 @@ do
                     )
                 end
                 as.WindUI:ToggleAcrylic(false)
+                am(blurEffect, 0.25, {Size = 0}, Enum.EasingStyle.Quint):Play()
                 au.UIElements.Main:WaitForChild "Main".Visible = false
                 au.CanDropdown = false
                 au.Closed = true
@@ -14030,6 +14061,7 @@ do
                             if au.AcrylicPaint and au.AcrylicPaint.Model then
                                 au.AcrylicPaint.Model:Destroy()
                             end
+                            blurEffect:Destroy()
                             au.Destroyed = true
                             task.wait(0.4)
                             as.WindUI.ScreenGui:Destroy()
@@ -14699,7 +14731,7 @@ do
                 end
             end
             local divider = al("Frame", {
-                Size = UDim2.new(0, 4, 1, -au.Topbar.Height),
+                Size = UDim2.new(0, 4, 1, -au.Topbar.Height - au.Footer.Height),
                 Position = UDim2.new(0, au.SideBarWidth, 0, au.Topbar.Height),
                 BackgroundTransparency = 0.5,
                 BackgroundColor3 = Color3.fromRGB(100,100,100),
@@ -14724,7 +14756,7 @@ do
                     au.SideBarWidth = newWidth
                     au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)
                     divider.Position = UDim2.new(0, newWidth, divider.Position.Y.Scale, divider.Position.Y.Offset)
-                    au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height)
+                    au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height - au.Footer.Height)
                     if au.User.Enabled then
                         aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), aB.Size.Y.Scale, aB.Size.Y.Offset)
                     end
@@ -14753,12 +14785,12 @@ do
                 local tween2 = am(divider, 0.25, {Position = UDim2.new(0, targetWidth, 0, au.Topbar.Height)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
                 tween2:Play()
                 local conn = rs.Heartbeat:Connect(function()
-                    au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height)
+                    au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - au.Footer.Height)
                 end)
                 tween:Play()
                 tween.Completed:Wait()
                 conn:Disconnect()
-                au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth, 1, -au.Topbar.Height)
+                au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth, 1, -au.Topbar.Height - au.Footer.Height)
                 if not au.SideBarVisible then
                     au.UIElements.SideBarContainer.Visible = false
                     divider.Visible = false
