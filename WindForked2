@@ -12546,7 +12546,7 @@ do
     local rs = aa(game:GetService "RunService")
     local af = aa(game:GetService "Players")
     local mouse = af.LocalPlayer:GetMouse()
-    local ah = Workspace.CurrentCamera
+    local ah = workspace.CurrentCamera
     local aj = a.load "r"
     local ak = a.load "b"
     local al = ak.New
@@ -12621,7 +12621,67 @@ do
             IsInteractable = true,
             IsPinned = false,
             SidebarAutoHoover = false,
-            CurrentAccent = Color3.fromRGB(0, 120, 255)
+            CurrentAccent = Color3.fromRGB(0, 120, 255),
+            ThemeManager = {
+                CurrentTheme = "Dark",
+                Themes = {
+                    ["Dark"] = {
+                        WindowBackground = Color3.fromRGB(25, 25, 25),
+                        WindowShadow = Color3.fromRGB(0, 0, 0),
+                        WindowTopbarTitle = Color3.fromRGB(255, 255, 255),
+                        WindowTopbarAuthor = Color3.fromRGB(200, 200, 200),
+                        Text = Color3.fromRGB(255, 255, 255),
+                        Accent = Color3.fromRGB(0, 120, 255),
+                        SectionBackground = Color3.fromRGB(35, 35, 35),
+                        ElementBackground = Color3.fromRGB(45, 45, 45),
+                        Black = Color3.fromRGB(0, 0, 0)
+                    },
+                    ["Light"] = {
+                        WindowBackground = Color3.fromRGB(240, 240, 240),
+                        WindowShadow = Color3.fromRGB(150, 150, 150),
+                        WindowTopbarTitle = Color3.fromRGB(30, 30, 30),
+                        WindowTopbarAuthor = Color3.fromRGB(80, 80, 80),
+                        Text = Color3.fromRGB(30, 30, 30),
+                        Accent = Color3.fromRGB(0, 120, 255),
+                        SectionBackground = Color3.fromRGB(225, 225, 225),
+                        ElementBackground = Color3.fromRGB(215, 215, 215),
+                        Black = Color3.fromRGB(50, 50, 50)
+                    },
+                    ["Midnight"] = {
+                        WindowBackground = Color3.fromRGB(10, 11, 15),
+                        WindowShadow = Color3.fromRGB(0, 0, 0),
+                        WindowTopbarTitle = Color3.fromRGB(255, 255, 255),
+                        WindowTopbarAuthor = Color3.fromRGB(150, 160, 200),
+                        Text = Color3.fromRGB(255, 255, 255),
+                        Accent = Color3.fromRGB(100, 115, 255),
+                        SectionBackground = Color3.fromRGB(20, 22, 30),
+                        ElementBackground = Color3.fromRGB(30, 33, 45),
+                        Black = Color3.fromRGB(0, 0, 0)
+                    },
+                    ["Rose"] = {
+                        WindowBackground = Color3.fromRGB(25, 20, 22),
+                        WindowShadow = Color3.fromRGB(0, 0, 0),
+                        WindowTopbarTitle = Color3.fromRGB(255, 230, 240),
+                        WindowTopbarAuthor = Color3.fromRGB(255, 180, 200),
+                        Text = Color3.fromRGB(255, 255, 255),
+                        Accent = Color3.fromRGB(255, 105, 180),
+                        SectionBackground = Color3.fromRGB(35, 28, 30),
+                        ElementBackground = Color3.fromRGB(45, 35, 38),
+                        Black = Color3.fromRGB(0, 0, 0)
+                    },
+                    ["Emerald"] = {
+                        WindowBackground = Color3.fromRGB(10, 20, 15),
+                        WindowShadow = Color3.fromRGB(0, 0, 0),
+                        WindowTopbarTitle = Color3.fromRGB(230, 255, 240),
+                        WindowTopbarAuthor = Color3.fromRGB(150, 200, 180),
+                        Text = Color3.fromRGB(255, 255, 255),
+                        Accent = Color3.fromRGB(46, 204, 113),
+                        SectionBackground = Color3.fromRGB(15, 30, 22),
+                        ElementBackground = Color3.fromRGB(22, 45, 33),
+                        Black = Color3.fromRGB(0, 0, 0)
+                    }
+                }
+            }
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
@@ -13845,6 +13905,50 @@ do
             end
         end
 
+        function au.SetTheme(m, themeName)
+            local themeData = au.ThemeManager.Themes[themeName]
+            if themeData then
+                au.ThemeManager.CurrentTheme = themeName
+                au:UpdateThemeColors()
+            end
+        end
+
+        function au.AddTheme(m, themeName, themeData)
+            au.ThemeManager.Themes[themeName] = themeData
+        end
+
+        function au.GetThemes(m)
+            local t = {}
+            for name, _ in next, au.ThemeManager.Themes do
+                table.insert(t, name)
+            end
+            return t
+        end
+
+        function au.UpdateThemeColors(m)
+            local current = au.ThemeManager.Themes[au.ThemeManager.CurrentTheme]
+            if not current then
+                return
+            end
+
+            local function tweenProp(obj, prop, val)
+                if obj and obj[prop] then
+                    am(obj, 0.3, {[prop] = val}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+                end
+            end
+
+            tweenProp(au.UIElements.Main.Background, "ImageColor3", current.WindowBackground)
+            tweenProp(j, "TextColor3", current.WindowTopbarTitle)
+            if g then
+                tweenProp(g, "TextColor3", current.WindowTopbarAuthor)
+            end
+            tweenProp(aA, "ImageColor3", current.WindowShadow)
+
+            if as.WindUI and as.WindUI.UpdateTheme then
+                as.WindUI:UpdateTheme(current)
+            end
+        end
+
         function au.SetSidebarAutoHoover(m, bool)
             au.SidebarAutoHoover = bool
         end
@@ -14121,8 +14225,10 @@ do
         function au.Close(r)
             if au.IsPinned then
                 au:Notify("Important", "This window is pinned and cannot be closed manually.")
-                return {Destroy = function()
-                    end}
+                return {
+                    Destroy = function()
+                    end
+                }
             end
 
             local u = {}
