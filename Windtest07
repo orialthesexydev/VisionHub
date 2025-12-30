@@ -12618,8 +12618,9 @@ do
                 SideBarVisible = true,
                 CanDrag = true,
                 IsInteractable = true,
-                IsPinned = false, -- New Feature: Pinned state
-                ShowFPS = false -- New Feature: FPS Toggle
+                IsPinned = false,
+                SidebarAutoHoover = false,
+                CurrentAccent = nil
             }
             au.UICorner = au.Radius
             au.ElementConfig = {
@@ -12756,7 +12757,8 @@ do
                     ),
                     Position = UDim2.new(0, 0, 0, au.Topbar.Height),
                     BackgroundTransparency = 1,
-                    Visible = true
+                    Visible = true,
+                    ClipsDescendants = true
                 },
                 {
                     al(
@@ -13253,18 +13255,6 @@ do
                 g = createAuthor(au.Author)
             end
 
-            -- Feature: FPS Meter Text
-            local fpsLabel = al("TextLabel", {
-                Text = "",
-                FontFace = Font.new(ak.Font, Enum.FontWeight.Bold),
-                BackgroundTransparency = 1,
-                AutomaticSize = "XY",
-                TextSize = 10,
-                ThemeTag = { TextColor3 = "Accent" },
-                LayoutOrder = 1,
-                Visible = false
-            })
-
             local statusIndicator = al(
                 "TextLabel",
                 {
@@ -13422,7 +13412,6 @@ do
                                                     ),
                                                     al("Frame", { AutomaticSize="XY", BackgroundTransparency=1, LayoutOrder=1 }, {
                                                         al("UIListLayout", { FillDirection="Horizontal", Padding=UDim.new(0,5), VerticalAlignment="Center" }),
-                                                        fpsLabel,
                                                         j,
                                                         statusIndicator
                                                     }),
@@ -13817,48 +13806,69 @@ do
                 am(interactLayer, 0.2, { BackgroundTransparency = bool and 1 or 0.85 }):Play()
             end
 
-            -- New Utility: Toggle Pinned state
             function au.SetPinned(m, bool)
                 au.IsPinned = bool
             end
 
-            -- New Utility: Set content Watermark
             function au.SetWatermark(m, text)
                 watermarkLabel.Text = text or ""
                 watermarkLabel.Visible = (text ~= "" and text ~= nil)
             end
 
-            -- New Utility: Bring window to the front
             function au.BringToFront(m)
                 if as.Parent then
                     as.WindUI.ScreenGui.DisplayOrder = as.WindUI.ScreenGui.DisplayOrder + 1
                 end
             end
 
-            -- Performance Utility: Update Loop
-            task.spawn(function()
-                local lastTime = tick()
-                local frames = 0
-                while task.wait(0.5) do
-                    if au.ShowFPS then
-                        local currentTime = tick()
-                        frames = frames + 1
-                        local delta = currentTime - lastTime
-                        if delta >= 1 then
-                            fpsLabel.Text = "["..tostring(math.floor(frames / delta)).." FPS]"
-                            fpsLabel.Visible = true
-                            lastTime = currentTime
-                            frames = 0
-                        end
-                    else
-                        fpsLabel.Visible = false
+            -- New Utility: Flash window
+            function au.Flash(m)
+                task.spawn(function()
+                    am(ay, 0.1, { ImageTransparency = 0.5, ImageColor3 = Color3.fromRGB(255,255,255) }):Play()
+                    task.wait(0.1)
+                    am(ay, 0.4, { ImageTransparency = 1 }):Play()
+                end)
+            end
+
+            -- New Utility: Shake window
+            function au.Shake(m, intensity)
+                intensity = intensity or 5
+                local orig = au.UIElements.Main.Position
+                task.spawn(function()
+                    for i = 1, 6 do
+                        au.UIElements.Main.Position = orig + UDim2.new(0, math.random(-intensity, intensity), 0, math.random(-intensity, intensity))
+                        task.wait(0.02)
+                    end
+                    au.UIElements.Main.Position = orig
+                end)
+            end
+
+            -- New Utility: Dynamic Accent Swapper
+            function au.UpdateAccent(m, color)
+                au.CurrentAccent = color
+                statusIndicator.TextColor3 = color
+                -- Updates generic dialog/ui buttons if internal windui supports Refresh ThemeTag
+                if as.WindUI and as.WindUI.UpdateTheme then
+                    as.WindUI:UpdateTheme({ Accent = color })
+                end
+            end
+
+            -- New Utility: Hover sidebar
+            function au.SetSidebarAutoHoover(m, bool)
+                au.SidebarAutoHoover = bool
+            end
+
+            ak.AddSignal(ae.InputChanged, function(input)
+                if au.SidebarAutoHoover and not au.Closed then
+                    local mx = mouse.X / as.WindUI.UIScale
+                    local sideTriggerWidth = au.SideBarWidth + 40
+                    if mx < sideTriggerWidth and not au.SideBarVisible then
+                        au:ToggleSidebar()
+                    elseif mx >= sideTriggerWidth and au.SideBarVisible then
+                        au:ToggleSidebar()
                     end
                 end
             end)
-
-            function au.ToggleFPS(m, bool)
-                au.ShowFPS = bool
-            end
 
             function au.Banner(m, text)
                 local bnr = al("Frame", {
@@ -14846,7 +14856,7 @@ do
             function au.DisableTopbarButtons(J, L)
                 for M, N in next, L do
                     for O, P in next, au.TopBarButtons do
-                        if P.Name == NM then
+                        if P.Name == N then
                             P.Object.Visible = false
                         end
                     end
