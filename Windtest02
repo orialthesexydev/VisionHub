@@ -12552,10 +12552,10 @@ do
     local al = ak.New
     local am = ak.Tween
     local an = a.load "u".New
-    local ao = a.load "v".New
-    local ap = a.load "w".New
-    local aq = a.load "x"
-    local ar = a.load "y"
+    local ao = a.load "k".New
+    local ap = a.load "v".New
+    local aq = a.load "w"
+    local ar = a.load "x"
     return function(as)
         local au = {
             Title = as.Title or "UI Library",
@@ -12615,8 +12615,7 @@ do
             ElementConfig = {},
             PendingFlags = {},
             IsToggleDragging = false,
-            SideBarVisible = true,
-            Folders = {} -- new: track folders for easy access
+            SideBarVisible = true
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
@@ -12686,32 +12685,6 @@ do
                 Active = false
             }
         )
-        -- New: Sidebar content will be inside a container frame with UIListLayout
-        au.UIElements.SideBarContent =
-            al(
-            "Frame",
-            {
-                Name = "Content",
-                BackgroundTransparency = 1,
-                AutomaticSize = "Y",
-                Size = UDim2.new(1, 0, 0, 0)
-            },
-            {
-                al(
-                    "UIListLayout",
-                    {
-                        SortOrder = "LayoutOrder",
-                        Padding = UDim.new(0, au.Gap)
-                    }
-                ),
-                al(
-                    "UIPadding",
-                    {
-                        PaddingBottom = UDim.new(0, au.UIPadding / 2)
-                    }
-                )
-            }
-        )
         au.UIElements.SideBar =
             al(
             "ScrollingFrame",
@@ -12734,7 +12707,30 @@ do
                 VerticalScrollBarPosition = "Left"
             },
             {
-                au.UIElements.SideBarContent,
+                al(
+                    "Frame",
+                    {
+                        BackgroundTransparency = 1,
+                        AutomaticSize = "Y",
+                        Size = UDim2.new(1, 0, 0, 0),
+                        Name = "Frame"
+                    },
+                    {
+                        al(
+                            "UIPadding",
+                            {
+                                PaddingBottom = UDim.new(0, au.UIPadding / 2)
+                            }
+                        ),
+                        al(
+                            "UIListLayout",
+                            {
+                                SortOrder = "LayoutOrder",
+                                Padding = UDim.new(0, au.Gap)
+                            }
+                        )
+                    }
+                ),
                 al(
                     "UIPadding",
                     {
@@ -12885,8 +12881,8 @@ do
                                         NumberSequenceKeypoint.new(0.5, 1),
                                         NumberSequenceKeypoint.new(1.0, 0.1)
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     ),
                     ak.NewRoundFrame(
@@ -13609,7 +13605,8 @@ do
                             Enum.EasingStyle.Quint,
                             Enum.EasingDirection.Out
                         ):Play()
-                        am(B, .1, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+                        am(B, .1, {Size = UDim2.new(0, 0, 0, 0)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play(
+                        )
                     end
                 end
             )
@@ -13650,7 +13647,7 @@ do
                 }
             )
         end
-        au.OpenButtonMain = a.load "z".New(au)
+        au.OpenButtonMain = a.load "y".New(au)
         task.spawn(
             function()
                 if au.Icon then
@@ -13872,7 +13869,8 @@ do
                         Enum.EasingDirection.Out
                     ):Play()
                     if UIStroke then
-                        am(UIStroke, 0.25, {Transparency = .8}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+                        am(UIStroke, 0.25, {Transparency = .8}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play(
+                        )
                     end
                     task.spawn(
                         function()
@@ -13962,7 +13960,7 @@ do
                         },
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
-                    ):Play()
+                        ):Play()
                 end
             end
             am(aA, 0.25, {ImageTransparency = 1}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
@@ -14139,137 +14137,6 @@ do
         if au.OpenButton and typeof(au.OpenButton) == "table" then
             au:EditOpenButton(au.OpenButton)
         end
-
-        -- New Feature: Folder (Accordion-style grouping)
-        function au.Folder(options)
-            options = options or {}
-            local title = options.Title or "Folder"
-            local icon = options.Icon
-            local openByDefault = options.Open or false
-            local layoutOrder = options.LayoutOrder or #au.UIElements.SideBarContent:GetChildren()
-
-            local folderFrame = al("Frame", {
-                Name = "Folder",
-                Size = UDim2.new(1, 0, 0, 44),
-                BackgroundTransparency = 1,
-                LayoutOrder = layoutOrder
-            })
-
-            local header = al("TextButton", {
-                Size = UDim2.new(1, 0, 0, 44),
-                BackgroundTransparency = 1,
-                Text = "",
-                AutoButtonColor = false
-            })
-
-            local headerIcon = nil
-            if icon then
-                headerIcon = ak.Image(icon, title, 0, au.Folder, "Folder", true)
-                headerIcon.Size = UDim2.new(0, 24, 0, 24)
-                headerIcon.Position = UDim2.new(0, 10, 0.5, 0)
-                headerIcon.AnchorPoint = Vector2.new(0, 0.5)
-                headerIcon.Parent = header
-            end
-
-            local titleLabel = al("TextLabel", {
-                Text = title,
-                FontFace = Font.new(ak.Font, Enum.FontWeight.SemiBold),
-                TextSize = 16,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                BackgroundTransparency = 1,
-                ThemeTag = {TextColor3 = "Text"},
-                Size = UDim2.new(1, icon and -50 or -20, 1, 0),
-                Position = icon and UDim2.new(0, 44, 0, 0) or UDim2.new(0, 10, 0, 0),
-                TextTransparency = 0.1
-            })
-            titleLabel.Parent = header
-
-            local arrow = al("ImageLabel", {
-                Image = "rbxassetid://10709791437", -- default right arrow
-                Size = UDim2.new(0, 16, 0, 16),
-                Position = UDim2.new(1, -14, 0.5, 0),
-                AnchorPoint = Vector2.new(1, 0.5),
-                BackgroundTransparency = 1,
-                ImageColor3 = Color3.fromRGB(180, 180, 180)
-            })
-            arrow.Parent = header
-
-            local contentContainer = al("Frame", {
-                Name = "Content",
-                Size = UDim2.new(1, -12, 0, 0),
-                Position = UDim2.new(0, 12, 0, 44),
-                BackgroundTransparency = 1,
-                ClipsDescendants = true,
-                AutomaticSize = Enum.AutomaticSize.Y
-            },
-            {
-                al("UIListLayout", {
-                    SortOrder = "LayoutOrder",
-                    Padding = UDim.new(0, au.Gap)
-                })
-            })
-
-            header.Parent = folderFrame
-            contentContainer.Parent = folderFrame
-            folderFrame.Parent = au.UIElements.SideBarContent
-
-            local isOpen = openByDefault
-            local tweenTime = 0.25
-
-            local function updateState()
-                if isOpen then
-                    arrow.Image = "rbxassetid://10709791531" -- down arrow
-                    am(contentContainer, tweenTime, {Position = UDim2.new(0, 12, 0, 44)}):Play()
-                else
-                    arrow.Image = "rbxassetid://10709791437" -- right arrow
-                    am(contentContainer, tweenTime, {Position = UDim2.new(0, 12, 0, 0)}):Play()
-                end
-            end
-
-            if not openByDefault then
-                contentContainer.Position = UDim2.new(0, 12, 0, 0)
-            end
-
-            ak.AddSignal(header.MouseButton1Click, function()
-                isOpen = not isOpen
-                updateState()
-            end)
-
-            ak.AddSignal(header.MouseEnter, function()
-                am(titleLabel, 0.15, {TextTransparency = 0}):Play()
-            end)
-
-            ak.AddSignal(header.MouseLeave, function()
-                am(titleLabel, 0.15, {TextTransparency = 0.1}):Play()
-            end)
-
-            -- Store for external use
-            table.insert(au.Folders, {
-                Frame = folderFrame,
-                Header = header,
-                Content = contentContainer.Content,
-                IsOpen = function() return isOpen end,
-                Toggle = function()
-                    isOpen = not isOpen
-                    updateState()
-                end,
-                Open = function()
-                    if not isOpen then
-                        isOpen = true
-                        updateState()
-                    end
-                end,
-                Close = function()
-                    if isOpen then
-                        isOpen = false
-                        updateState()
-                    end
-                end
-            })
-
-            return contentContainer.Content -- return the container where tabs will be parented
-        end
-
         local r = a.load "V"
         local u = a.load "W"
         local v = r.Init(au, as.WindUI, as.WindUI.TooltipGui)
@@ -14279,18 +14146,123 @@ do
             end
         )
         au.TabModule = v
-
-        -- Modified Tab creation to support optional parent (folder content)
-        function au.Tab(x, B, folderContent)
-            B.Parent = folderContent or au.UIElements.SideBarContent
+        function au.Tab(x, B)
+            B.Parent = au.UIElements.SideBar.Frame
             return v.New(B, as.WindUI.UIScale)
         end
+        
+        -- AGROUPAMENTO DE ABAS FEATURE --
+        function au.Folder(x, s)
+            local isOpen = false
+            local container = al("Frame", {
+                Name = s.Title .. "_Folder",
+                BackgroundTransparency = 1,
+                Size = UDim2.new(1, 0, 0, 36),
+                ClipsDescendants = true,
+                Parent = au.UIElements.SideBar.Frame,
+            }, {
+                al("UIListLayout", {
+                    SortOrder = "LayoutOrder",
+                    Padding = UDim.new(0, au.Gap)
+                })
+            })
+
+            local folderButton = ak.NewRoundFrame(8, "Squircle", {
+                Size = UDim2.new(1, 0, 0, 36),
+                BackgroundTransparency = 1,
+                ImageTransparency = 1,
+                Parent = container
+            })
+            
+            local btnContent = al("Frame", {
+                Size = UDim2.new(1, 0, 1, 0),
+                BackgroundTransparency = 1,
+                Parent = folderButton
+            }, {
+                al("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) }),
+                al("UIListLayout", {
+                    FillDirection = "Horizontal",
+                    VerticalAlignment = "Center",
+                    Padding = UDim.new(0, 10)
+                })
+            })
+
+            local arrowIcon = ak.Image("chevron-right", "folder_arrow", 0, au.Folder, "FolderArrow", true)
+            arrowIcon.Size = UDim2.new(0, 14, 0, 14)
+            arrowIcon.Parent = btnContent
+            arrowIcon.LayoutOrder = 3
+            
+            local iconImg
+            if s.Icon then
+                iconImg = ak.Image(s.Icon, "folder_icon", 0, au.Folder, "FolderIcon", true)
+                iconImg.Size = UDim2.new(0, 18, 0, 18)
+                iconImg.Parent = btnContent
+                iconImg.LayoutOrder = 1
+            end
+
+            local titleLbl = al("TextLabel", {
+                Text = s.Title or "Folder",
+                Size = UDim2.new(1, -40, 1, 0),
+                BackgroundTransparency = 1,
+                TextXAlignment = "Left",
+                ThemeTag = { TextColor3 = "Text" },
+                FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
+                TextSize = 14,
+                Parent = btnContent,
+                LayoutOrder = 2
+            })
+
+            local subTabsContainer = al("Frame", {
+                Size = UDim2.new(1, 0, 0, 0),
+                AutomaticSize = "Y",
+                BackgroundTransparency = 1,
+                Visible = false,
+                Parent = container
+            }, {
+                al("UIPadding", { PaddingLeft = UDim.new(0, 20) }),
+                al("UIListLayout", {
+                    Padding = UDim.new(0, au.Gap),
+                    SortOrder = "LayoutOrder"
+                })
+            })
+
+            local clickable = al("TextButton", {
+                Size = UDim2.new(1, 0, 1, 0),
+                BackgroundTransparency = 1,
+                Text = "",
+                Parent = folderButton
+            })
+
+            ak.AddSignal(clickable.MouseButton1Click, function()
+                isOpen = not isOpen
+                am(arrowIcon, 0.2, {Rotation = isOpen and 90 or 0}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+                subTabsContainer.Visible = true
+                local targetHeight = isOpen and (36 + subTabsContainer.AbsoluteSize.Y + au.Gap) or 36
+                local anim = am(container, 0.3, {Size = UDim2.new(1, 0, 0, targetHeight)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+                anim:Play()
+                anim.Completed:Connect(function()
+                    if not isOpen then subTabsContainer.Visible = false end
+                    container.AutomaticSize = isOpen and "Y" or "None"
+                end)
+            end)
+
+            ak.AddSignal(clickable.MouseEnter, function() am(folderButton, 0.1, {ImageTransparency = 0.95}):Play() end)
+            ak.AddSignal(clickable.MouseLeave, function() am(folderButton, 0.1, {ImageTransparency = 1}):Play() end)
+
+            local folderObj = {}
+            function folderObj.Tab(x, tabData)
+                tabData.Parent = subTabsContainer
+                return v.New(tabData, as.WindUI.UIScale)
+            end
+            return folderObj
+        end
+        -- FIM FEATURE --
 
         function au.SelectTab(x, B)
             v:SelectTab(B)
         end
         function au.Section(x, B)
-            return u.New(B, au.UIElements.SideBarContent, au.Folder, as.WindUI.UIScale, au)
+            return u.New(B, au.UIElements.SideBar.Frame, au.Folder, as.WindUI.UIScale, au)
         end
         function au.IsResizable(x, B)
             au.Resizable = B
@@ -14328,7 +14300,7 @@ do
                 al(
                 "Frame",
                 {
-                    Parent = au.UIElements.SideBarContent,
+                    Parent = au.UIElements.SideBar.Frame,
                     Size = UDim2.new(1, -7, 0, 5),
                     BackgroundTransparency = 1
                 },
