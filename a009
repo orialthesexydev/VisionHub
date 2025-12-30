@@ -12447,29 +12447,29 @@ do
             Title = as.Title or "UI Library",
             Author = as.Author,
             Icon = as.Icon,
-            IconSize = as.IconSize or 18,
+            IconSize = as.IconSize or 20,
             IconThemed = as.IconThemed,
             IconRadius = as.IconRadius or 0,
             Folder = as.Folder,
             Resizable = as.Resizable ~= false,
             Background = as.Background,
-            BackgroundImageTransparency = as.BackgroundImageTransparency or 0.2,
-            ShadowTransparency = as.ShadowTransparency or 0.85,
+            BackgroundImageTransparency = as.BackgroundImageTransparency or 0,
+            ShadowTransparency = as.ShadowTransparency or 0.8,
             User = as.User or {},
             Footer = as.Footer or {},
-            Topbar = as.Topbar or {Height = 40, ButtonsType = "Minimal"},
+            Topbar = as.Topbar or {Height = 48, ButtonsType = "Minimal"},
             Size = as.Size,
-            MinSize = as.MinSize or Vector2.new(480, 300),
+            MinSize = as.MinSize or Vector2.new(500, 300),
             MaxSize = as.MaxSize or Vector2.new(900, 600),
             TopBarButtonIconSize = as.TopBarButtonIconSize or 14,
             ToggleKey = as.ToggleKey,
             ElementsRadius = as.ElementsRadius,
             Radius = as.Radius or 8,
-            Transparent = as.Transparent or true,
+            Transparent = as.Transparent or false,
             HideSearchBar = as.HideSearchBar ~= false,
             ScrollBarEnabled = as.ScrollBarEnabled or false,
-            SideBarWidth = as.SideBarWidth or 160,
-            Acrylic = as.Acrylic or true,
+            SideBarWidth = as.SideBarWidth or 180,
+            Acrylic = as.Acrylic or false,
             NewElements = as.NewElements or true,
             IgnoreAlerts = as.IgnoreAlerts or false,
             HidePanelBackground = as.HidePanelBackground or true,
@@ -12477,7 +12477,7 @@ do
             OpenButton = as.OpenButton,
             Position = UDim2.new(0.5, 0, 0.5, 0),
             UICorner = nil,
-            UIPadding = 8,
+            UIPadding = 10,
             UIElements = {},
             CanDropdown = true,
             Closed = false,
@@ -12500,35 +12500,14 @@ do
             AllElements = {},
             ElementConfig = {},
             PendingFlags = {},
-            IsToggleDragging = false,
-            Themes = {
-                Dark = {
-                    WindowBackground = Color3.fromRGB(30, 30, 30),
-                    Text = Color3.fromRGB(220, 220, 220),
-                    WindowShadow = Color3.fromRGB(20, 20, 20),
-                    WindowTopbarTitle = Color3.fromRGB(255, 255, 255),
-                    WindowTopbarAuthor = Color3.fromRGB(200, 200, 200),
-                    Black = Color3.fromRGB(0, 0, 0),
-                    WindowStroke = Color3.fromRGB(50, 50, 50)
-                },
-                Light = {
-                    WindowBackground = Color3.fromRGB(240, 240, 240),
-                    Text = Color3.fromRGB(40, 40, 40),
-                    WindowShadow = Color3.fromRGB(200, 200, 200),
-                    WindowTopbarTitle = Color3.fromRGB(0, 0, 0),
-                    WindowTopbarAuthor = Color3.fromRGB(100, 100, 100),
-                    Black = Color3.fromRGB(255, 255, 255),
-                    WindowStroke = Color3.fromRGB(220, 220, 220)
-                }
-            },
-            CurrentTheme = "Dark"
+            IsToggleDragging = false
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
             UIPadding = (au.NewElements and 8 or 10),
-            UICorner = au.ElementsRadius or (au.NewElements and 8 or 6)
+            UICorner = au.ElementsRadius or (au.NewElements and 6 or 8)
         }
-        local av = au.Size or UDim2.new(0, 500, 0, 400)
+        local av = au.Size or UDim2.new(0, 520, 0, 420)
         au.Size =
             UDim2.new(
             av.X.Scale,
@@ -12537,7 +12516,7 @@ do
             math.clamp(av.Y.Offset, au.MinSize.Y, au.MaxSize.Y)
         )
         if au.Topbar == {} then
-            au.Topbar = {Height = 40, ButtonsType = "Minimal"}
+            au.Topbar = {Height = 48, ButtonsType = "Minimal"}
         end
         if au.Folder then
             if not isfolder("WindUI/" .. au.Folder) then
@@ -12571,7 +12550,7 @@ do
             al(
             "Frame",
             {
-                Size = UDim2.new(0, 24, 0, 24),
+                Size = UDim2.new(0, 28, 0, 28),
                 Position = UDim2.new(1, 0, 1, 0),
                 AnchorPoint = Vector2.new(.5, .5),
                 BackgroundTransparency = 1,
@@ -12582,10 +12561,10 @@ do
                 al(
                     "ImageLabel",
                     {
-                        Size = UDim2.new(0, 72, 0, 72),
+                        Size = UDim2.new(0, 84, 0, 84),
                         BackgroundTransparency = 1,
                         Image = "rbxassetid://120997033468887",
-                        Position = UDim2.new(0.5, -12, 0.5, -12),
+                        Position = UDim2.new(0.5, -14, 0.5, -14),
                         AnchorPoint = Vector2.new(0.5, 0.5),
                         ImageTransparency = 1
                     }
@@ -12607,7 +12586,7 @@ do
                 al(
                     "ImageLabel",
                     {
-                        Size = UDim2.new(0, 50, 0, 50),
+                        Size = UDim2.new(0, 60, 0, 60),
                         Image = ak.Icon "expand"[1],
                         ImageRectOffset = ak.Icon "expand"[2].ImageRectPosition,
                         ImageRectSize = ak.Icon "expand"[2].ImageRectSize,
@@ -12639,7 +12618,7 @@ do
                     1,
                     au.ScrollBarEnabled and -2 - (au.UIPadding / 2) or 0,
                     1,
-                    not au.HideSearchBar and -35 or 0
+                    not au.HideSearchBar and -40 or 0
                 ),
                 Position = UDim2.new(0, 0, 1, 0),
                 AnchorPoint = Vector2.new(0, 1),
@@ -12694,7 +12673,7 @@ do
                     0,
                     au.SideBarWidth,
                     1,
-                    au.User.Enabled and -au.Topbar.Height - 32 - (au.UIPadding * 2) or -au.Topbar.Height
+                    au.User.Enabled and -au.Topbar.Height - 36 - (au.UIPadding * 2) or -au.Topbar.Height
                 ),
                 Position = UDim2.new(0, 0, 0, au.Topbar.Height),
                 BackgroundTransparency = 1,
@@ -12706,7 +12685,7 @@ do
                     {
                         Name = "Content",
                         BackgroundTransparency = 1,
-                        Size = UDim2.new(1, 0, 1, not au.HideSearchBar and -35 - au.UIPadding / 2 or 0),
+                        Size = UDim2.new(1, 0, 1, not au.HideSearchBar and -40 - au.UIPadding / 2 or 0),
                         Position = UDim2.new(0, 0, 1, 0),
                         AnchorPoint = Vector2.new(0, 1)
                     }
@@ -12721,7 +12700,7 @@ do
             al(
             "Frame",
             {
-                Size = UDim2.new(1, -au.SideBarWidth - 4, 1, -au.Topbar.Height),
+                Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height),
                 Position = UDim2.new(1, 0, 1, 0),
                 AnchorPoint = Vector2.new(1, 1),
                 BackgroundTransparency = 1
@@ -12778,18 +12757,12 @@ do
         if au.User then
             local function GetUserThumb()
                 local aC, aD =
-                    pcall(function()
-                        return af:GetUserThumbnailAsync(
-                            au.User.Anonymous and 1 or af.LocalPlayer.UserId,
-                            Enum.ThumbnailType.HeadShot,
-                            Enum.ThumbnailSize.Size420x420
-                        )
-                    end)
-                if aC then
-                    return aD
-                else
-                    return "rbxassetid://0"
-                end
+                    af:GetUserThumbnailAsync(
+                    au.User.Anonymous and 1 or af.LocalPlayer.UserId,
+                    Enum.ThumbnailType.HeadShot,
+                    Enum.ThumbnailSize.Size420x420
+                )
+                return aC
             end
             aB =
                 al(
@@ -12797,9 +12770,9 @@ do
                 {
                     Size = UDim2.new(
                         0,
-                        (au.SideBarWidth) - (au.UIPadding / 2),
+                        (au.UIElements.SideBarContainer.AbsoluteSize.X) - (au.UIPadding / 2),
                         0,
-                        32 + (au.UIPadding)
+                        36 + (au.UIPadding)
                     ),
                     Position = UDim2.new(0, au.UIPadding / 2, 1, -(au.UIPadding / 2)),
                     AnchorPoint = Vector2.new(0, 1),
@@ -12854,7 +12827,7 @@ do
                                 {
                                     Image = GetUserThumb(),
                                     BackgroundTransparency = 1,
-                                    Size = UDim2.new(0, 32, 0, 32),
+                                    Size = UDim2.new(0, 36, 0, 36),
                                     ThemeTag = {
                                         BackgroundColor3 = "Text"
                                     },
@@ -12887,7 +12860,7 @@ do
                                             FontFace = Font.new(ak.Font, Enum.FontWeight.SemiBold),
                                             AutomaticSize = "Y",
                                             BackgroundTransparency = 1,
-                                            Size = UDim2.new(1, -22, 0, 0),
+                                            Size = UDim2.new(1, -24, 0, 0),
                                             TextTruncate = "AtEnd",
                                             TextXAlignment = "Left",
                                             Name = "DisplayName"
@@ -12905,7 +12878,7 @@ do
                                             FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
                                             AutomaticSize = "Y",
                                             BackgroundTransparency = 1,
-                                            Size = UDim2.new(1, -22, 0, 0),
+                                            Size = UDim2.new(1, -24, 0, 0),
                                             TextTruncate = "AtEnd",
                                             TextXAlignment = "Left",
                                             Name = "UserName"
@@ -12944,7 +12917,7 @@ do
                 am(
                     au.UIElements.SideBarContainer,
                     .25,
-                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 32 - (au.UIPadding * 2))},
+                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 36 - (au.UIPadding * 2))},
                     Enum.EasingStyle.Quint,
                     Enum.EasingDirection.Out
                 ):Play()
@@ -12985,8 +12958,8 @@ do
                 ak.AddSignal(
                     aB.MouseEnter,
                     function()
-                        am(aB.UserIcon, 0.04, {ImageTransparency = .97}):Play()
-                        am(aB.Outline, 0.04, {ImageTransparency = .9}):Play()
+                        am(aB.UserIcon, 0.04, {ImageTransparency = .96}):Play()
+                        am(aB.Outline, 0.04, {ImageTransparency = .88}):Play()
                     end
                 )
                 ak.AddSignal(
@@ -13198,20 +13171,6 @@ do
                 }
             }
         )
-        local UIStroke = al("UIStroke", {
-            Transparency = 1,
-            ThemeTag = {
-                Color = "WindowStroke"
-            }
-        })
-        au.UIElements.Splitter = al("Frame", {
-            Size = UDim2.new(0, 4, 1, -au.Topbar.Height),
-            Position = UDim2.new(0, au.SideBarWidth, 0, au.Topbar.Height),
-            BackgroundTransparency = 0.8,
-            BackgroundColor3 = Color3.fromRGB(100, 100, 100),
-            Active = true,
-            ZIndex = 100
-        })
         au.UIElements.Main =
             al(
             "Frame",
@@ -13250,7 +13209,6 @@ do
                 aw,
                 ay,
                 az,
-                au.UIElements.Splitter,
                 al(
                     "Frame",
                     {
@@ -13461,7 +13419,7 @@ do
                 "Squircle",
                 {
                     Size = au.Topbar.ButtonsType == "Minimal" and
-                        UDim2.new(0, au.Topbar.Height - 12, 0, au.Topbar.Height - 12) or
+                        UDim2.new(0, au.Topbar.Height - 14, 0, au.Topbar.Height - 14) or
                         UDim2.new(0, 12, 0, 12),
                     LayoutOrder = u or 999,
                     Parent = au.Topbar.ButtonsType == "Minimal" and au.UIElements.Main.Main.Topbar.Right or nil,
@@ -13491,21 +13449,21 @@ do
                         {
                             au.Topbar.ButtonsType == "Minimal" and
                                 al(
-                                    "UIGradient",
-                                    {
-                                        Rotation = 45,
-                                        Color = ColorSequence.new {
-                                            ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
-                                            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-                                            ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
-                                        },
-                                        Transparency = NumberSequence.new {
-                                            NumberSequenceKeypoint.new(0.0, 0.2),
-                                            NumberSequenceKeypoint.new(0.5, 1),
-                                            NumberSequenceKeypoint.new(1.0, 0.2)
-                                        }
+                                "UIGradient",
+                                {
+                                    Rotation = 45,
+                                    Color = ColorSequence.new {
+                                        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+                                        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+                                        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
+                                    },
+                                    Transparency = NumberSequence.new {
+                                        NumberSequenceKeypoint.new(0.0, 0.2),
+                                        NumberSequenceKeypoint.new(0.5, 1),
+                                        NumberSequenceKeypoint.new(1.0, 0.2)
                                     }
-                                ) or
+                                }
+                            ) or
                                 nil
                         }
                     ),
@@ -13593,15 +13551,6 @@ do
                     end
                     au.Position = au.UIElements.Main.Position
                     au.Dragging = l
-                    if not l then
-                        local absPos = au.UIElements.Main.AbsolutePosition
-                        local size = au.UIElements.Main.AbsoluteSize
-                        local vp = ah.ViewportSize
-                        local newAbsX = math.clamp(absPos.X, 0, vp.X - size.X)
-                        local newAbsY = math.clamp(absPos.Y, 0, vp.Y - size.Y)
-                        au.UIElements.Main.Position = UDim2.new(0, newAbsX, 0, newAbsY)
-                        au.Position = au.UIElements.Main.Position
-                    end
                 end
             end
         )
@@ -13617,7 +13566,7 @@ do
                 {
                     Size = UDim2.new(1, 0, 1, 0),
                     Parent = au.UIElements.Main.Background,
-                    ImageTransparency = au.Transparent and as.WindUI.TransparencyValue or 0.1
+                    ImageTransparency = au.Transparent and as.WindUI.TransparencyValue or 0
                 },
                 {
                     m
@@ -13632,7 +13581,7 @@ do
                         al(
                         "Frame",
                         {
-                            Size = UDim2.new(0, 18, 0, 18),
+                            Size = UDim2.new(0, 20, 0, 20),
                             BackgroundTransparency = 1,
                             Parent = au.UIElements.Main.Main.Topbar.Left
                         }
@@ -13785,7 +13734,7 @@ do
                         au.UIElements.Main.Background,
                         0.2,
                         {
-                            ImageTransparency = au.Transparent and as.WindUI.TransparencyValue or 0.1
+                            ImageTransparency = au.Transparent and as.WindUI.TransparencyValue or 0
                         },
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
@@ -13795,7 +13744,7 @@ do
                             au.UIElements.BackgroundGradient,
                             0.2,
                             {
-                                ImageTransparency = 0.1
+                                ImageTransparency = 0
                             },
                             Enum.EasingStyle.Quint,
                             Enum.EasingDirection.Out
@@ -13813,7 +13762,6 @@ do
                     if aF then
                         if aF:IsA "VideoFrame" then
                             aF.Visible = true
-                            aF:Play()
                         else
                             am(
                                 aF,
@@ -13921,7 +13869,6 @@ do
             if aF then
                 if aF:IsA "VideoFrame" then
                     aF.Visible = false
-                    aF:Pause()
                 else
                     am(
                         aF,
@@ -13997,8 +13944,8 @@ do
         function au.ToggleTransparency(r, u)
             au.Transparent = u
             as.WindUI.Transparent = u
-            au.UIElements.Main.Background.ImageTransparency = u and as.WindUI.TransparencyValue or 0.1
-            au.UIElements.MainBar.Background.ImageTransparency = u and 0.98 or 0.97
+            au.UIElements.Main.Background.ImageTransparency = u and as.WindUI.TransparencyValue or 0
+            au.UIElements.MainBar.Background.ImageTransparency = u and 0.98 or 0.98
         end
         function au.LockAll(r)
             for u, v in next, au.AllElements do
@@ -14054,7 +14001,7 @@ do
             au.CurrentConfig = u
         end
         do
-            local r = 30
+            local r = 35
             local u = ah.ViewportSize
             local v = au.UIElements.Main.AbsoluteSize
             if not au.IsFullscreen and au.AutoScale then
@@ -14063,7 +14010,7 @@ do
                 local C = x / v.X
                 local F = B / v.Y
                 local G = math.min(C, F)
-                local H = 0.4
+                local H = 0.3
                 local J = 1.0
                 local L = math.clamp(G, H, J)
                 local M = au:GetUIScale() or 1
@@ -14150,7 +14097,7 @@ do
                     Size = UDim2.new(1, 0, 0, 1),
                     Position = UDim2.new(0.5, 0, 0, 0),
                     AnchorPoint = Vector2.new(0.5, 0),
-                    BackgroundTransparency = .95,
+                    BackgroundTransparency = .92,
                     ThemeTag = {
                         BackgroundColor3 = "Text"
                     }
@@ -14161,7 +14108,7 @@ do
                 "Frame",
                 {
                     Parent = au.UIElements.SideBar.Frame,
-                    Size = UDim2.new(1, -5, 0, 4),
+                    Size = UDim2.new(1, -6, 0, 4),
                     BackgroundTransparency = 1
                 },
                 {
@@ -14212,7 +14159,7 @@ do
             local J
             if C.Icon then
                 J = ak.Image(C.Icon, F.Title .. ":" .. C.Icon, 0, au, "Dialog", true, C.IconThemed)
-                J.Size = UDim2.new(0, 18, 0, 18)
+                J.Size = UDim2.new(0, 20, 0, 20)
                 J.Parent = H
             end
             G.UIElements.UIListLayout =
@@ -14229,7 +14176,7 @@ do
                 "UISizeConstraint",
                 {
                     MinSize = Vector2.new(160, 18),
-                    MaxSize = Vector2.new(350, math.huge),
+                    MaxSize = Vector2.new(360, math.huge),
                     Parent = G.UIElements.Main
                 }
             )
@@ -14243,7 +14190,7 @@ do
                     TextXAlignment = "Left",
                     TextWrapped = true,
                     RichText = true,
-                    Size = UDim2.new(1, J and -22 - G.UIPadding or 0, 0, 0),
+                    Size = UDim2.new(1, J and -24 - G.UIPadding or 0, 0, 0),
                     AutomaticSize = "Y",
                     ThemeTag = {
                         TextColor3 = "Text"
@@ -14297,7 +14244,7 @@ do
                 al(
                 "Frame",
                 {
-                    Size = UDim2.new(1, 0, 0, 35),
+                    Size = UDim2.new(1, 0, 0, 36),
                     AutomaticSize = "None",
                     BackgroundTransparency = 1,
                     Parent = G.UIElements.Main,
@@ -14321,7 +14268,7 @@ do
                     R.Size = UDim2.new(0, 0, 1, 0)
                     R.AutomaticSize = Enum.AutomaticSize.X
                 end
-                task.wait()
+                wait()
                 local S = L.AbsoluteContentSize.X / as.WindUI.UIScale
                 local T = M.AbsoluteSize.X / as.WindUI.UIScale
                 if S > T then
@@ -14330,7 +14277,7 @@ do
                     L.VerticalAlignment = Enum.VerticalAlignment.Bottom
                     M.AutomaticSize = Enum.AutomaticSize.Y
                     for U, V in ipairs(N) do
-                        V.Size = UDim2.new(1, 0, 0, 35)
+                        V.Size = UDim2.new(1, 0, 0, 36)
                         V.AutomaticSize = Enum.AutomaticSize.None
                     end
                 else
@@ -14354,7 +14301,7 @@ do
             end
             ak.AddSignal(G.UIElements.Main:GetPropertyChangedSignal "AbsoluteSize", CheckButtonsOverflow)
             CheckButtonsOverflow()
-            task.wait()
+            wait()
             G:Open()
             return G
         end
@@ -14397,9 +14344,6 @@ do
             end
             return aq:New(C, au.UIElements.Main.Main.Topbar.Center)
         end
-        local isResizing = false
-        local initialSize
-        local initialInputPosition
         local function startResizing(B)
             if au.CanResize then
                 isResizing = true
@@ -14500,7 +14444,7 @@ do
             local H = a.load "X"
             local J = false
             local L = an("Search", "search", au.UIElements.SideBarContainer, true)
-            L.Size = UDim2.new(1, -au.UIPadding / 2, 0, 32)
+            L.Size = UDim2.new(1, -au.UIPadding / 2, 0, 36)
             L.Position = UDim2.new(0, au.UIPadding / 2, 0, 0)
             ak.AddSignal(
                 L.MouseButton1Click,
@@ -14533,49 +14477,6 @@ do
                     if O.Name == M then
                         O.Object.Visible = false
                     end
-                end
-            end
-        end
-        ak.AddSignal(
-            au.UIElements.Splitter.InputBegan,
-            function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    local startPos = input.Position.X
-                    local startWidth = au.SideBarWidth
-                    local conn1, conn2
-                    conn1 = ae.InputChanged:Connect(function(input2)
-                        if input2.UserInputType == Enum.UserInputType.MouseMovement then
-                            local delta = input2.Position.X - startPos
-                            local newWidth = math.clamp(startWidth + delta, 100, 300)
-                            au.SideBarWidth = newWidth
-                            au.UIElements.SideBarContainer.Size = UDim2.new(
-                                0,
-                                newWidth,
-                                1,
-                                au.User.Enabled and -au.Topbar.Height - 32 - (au.UIPadding * 2) or -au.Topbar.Height
-                            )
-                            au.UIElements.Splitter.Position = UDim2.new(0, newWidth, 0, au.Topbar.Height)
-                            au.UIElements.MainBar.Size = UDim2.new(1, -newWidth - 4, 1, -au.Topbar.Height)
-                            if au.User.Enabled then
-                                aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), 0, 32 + (au.UIPadding))
-                            end
-                        end
-                    end)
-                    conn2 = input.Changed:Connect(function()
-                        if input.UserInputState == Enum.UserInputState.End then
-                            conn1:Disconnect()
-                            conn2:Disconnect()
-                        end
-                    end)
-                end
-            end
-        )
-        function au.SetTheme(r, theme)
-            if au.Themes[theme] then
-                au.CurrentTheme = theme
-                -- Apply theme to all elements
-                for key, color in pairs(au.Themes[theme]) do
-                    ak.SetThemeColor(key, color)
                 end
             end
         end
