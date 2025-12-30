@@ -12588,7 +12588,7 @@ do
             Transparent = as.Transparent or false,
             HideSearchBar = as.HideSearchBar ~= false,
             ScrollBarEnabled = as.ScrollBarEnabled or false,
-            SideBarWidth = as.SideBarWidth or 200,
+            SideBarWidth = as.SideBarWidth or 210, -- Updated default width
             Acrylic = as.Acrylic or false,
             NewElements = as.NewElements or false,
             IgnoreAlerts = as.IgnoreAlerts or false,
@@ -12630,7 +12630,7 @@ do
             UICorner = au.ElementsRadius or (au.NewElements and 23 or 12)
         }
 
-        local av = au.Size or UDim2.new(0, 580, 0, 460)
+        local av = au.Size or UDim2.new(0, 600, 0, 480) -- Refined Advanced Sizing
         au.Size =
             UDim2.new(
             av.X.Scale,
@@ -12680,7 +12680,7 @@ do
             al(
             "Frame",
             {
-                Size = UDim2.new(0, 32, 0, 32),
+                Size = UDim2.new(0, 36, 0, 36), -- Advanced enlarged handle
                 Position = UDim2.new(1, 0, 1, 0),
                 AnchorPoint = Vector2.new(.5, .5),
                 BackgroundTransparency = 1,
@@ -12827,64 +12827,53 @@ do
             }
         )
 
-        -- ADVANCED SIDEBAR UX: REORDER & VISUAL ENHANCEMENTS
-        local aSBT = al("Frame", {
-            Name = "Indicator",
-            Size = UDim2.new(0, 4, 0, 0),
-            Position = UDim2.new(0, 0, 0, 0),
-            ThemeTag = { BackgroundColor3 = "Accent" },
-            ZIndex = 105,
-            Visible = true,
-        }, { al("UICorner", { CornerRadius = UDim.new(1, 0) }) })
-        aSBT.Parent = au.UIElements.SideBar
-
+        -- ADVANCED REDESIGN: SIDEBAR RESIZE HANDLE
         local aSR = al("Frame", {
             Name = "SidebarResizeHandle",
-            Size = UDim2.new(0, 8, 1, -20),
-            Position = UDim2.new(1, -4, 0, 10),
-            BackgroundTransparency = 1,
+            Size = UDim2.new(0, 2, 0.85, 0),
+            AnchorPoint = Vector2.new(0, 0.5),
+            Position = UDim2.new(1, 0, 0.5, 0),
+            ThemeTag = {
+                BackgroundColor3 = "Text"
+            },
+            BackgroundTransparency = 0.9,
             Parent = au.UIElements.SideBarContainer,
-            ZIndex = 101,
-            Active = true
+            ZIndex = 1000
         }, {
             al("Frame", {
-                Name = "Visual",
-                Size = UDim2.new(0, 2, 0, 40),
-                AnchorPoint = Vector2.new(0.5, 0.5),
-                Position = UDim2.new(0.5, 0, 0.5, 0),
-                BackgroundTransparency = 0.8,
-                ThemeTag = { BackgroundColor3 = "Text" }
-            }, { al("UICorner", { CornerRadius = UDim.new(1, 0) }) })
+                Name = "HoverHandle",
+                Size = UDim2.new(0, 10, 1, 0),
+                AnchorPoint = Vector2.new(0.5, 0),
+                Position = UDim2.new(0.5, 0, 0, 0),
+                BackgroundTransparency = 1,
+                Active = true
+            })
         })
 
         local isResizingSidebar = false
-        ak.AddSignal(aSR.InputBegan, function(input)
+        ak.AddSignal(aSR.HoverHandle.InputBegan, function(input)
             if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not au.Closed then
                 isResizingSidebar = true
-                am(aSR.Visual, 0.2, { BackgroundTransparency = 0.2, Size = UDim2.new(0, 4, 0, 60) }):Play()
+                am(aSR, 0.1, {BackgroundTransparency = 0.5, Size = UDim2.new(0, 3, 0.9, 0)}):Play()
             end
         end)
 
         ak.AddSignal(ae.InputChanged, function(input)
             if isResizingSidebar and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                local relativeMousePos = (input.Position.X - au.UIElements.Main.AbsolutePosition.X) / as.WindUI.UIScale
-                local newWidth = math.clamp(relativeMousePos, 60, 320)
+                local relativePos = (input.Position.X - au.UIElements.Main.AbsolutePosition.X) / as.WindUI.UIScale
+                local newWidth = math.clamp(relativePos, 140, 280)
                 au.SideBarWidth = newWidth
                 
                 au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, 1, au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height)
                 au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height)
-                
-                if aB then
-                    aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), 0, 42 + au.UIPadding)
-                    aB.UserIcon.Frame.Visible = newWidth > 140
-                end
+                if aB then aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), 0, 42 + au.UIPadding) end
             end
         end)
 
         ak.AddSignal(ae.InputEnded, function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 isResizingSidebar = false
-                am(aSR.Visual, 0.2, { BackgroundTransparency = 0.8, Size = UDim2.new(0, 2, 0, 40) }):Play()
+                am(aSR, 0.15, {BackgroundTransparency = 0.9, Size = UDim2.new(0, 2, 0.85, 0)}):Play()
             end
         end)
 
@@ -12925,24 +12914,32 @@ do
             }
         )
 
-        -- Watermark Feature
+        -- ADVANCED REDESIGN: WATERMARK
         local aW = al("TextLabel", {
-            Name = "Watermark",
             Text = "",
-            FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
+            FontFace = Font.new(ak.Font, Enum.FontWeight.SemiBold),
             TextSize = 13,
-            TextTransparency = 0.6,
-            ThemeTag = { TextColor3 = "Text" },
+            TextTransparency = 0.65,
+            ThemeTag = {
+                TextColor3 = "Text"
+            },
             BackgroundTransparency = 1,
             AnchorPoint = Vector2.new(1, 1),
-            Position = UDim2.new(1, -12, 1, -8),
+            Position = UDim2.new(1, -20, 1, -12),
             AutomaticSize = "XY",
             ZIndex = 9999,
             Visible = false
+        }, {
+            al("UIGradient", {
+                Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 150, 150))
+                })
+            })
         })
 
         function au.SetWatermark(self, text)
-            aW.Text = text
+            aW.Text = tostring(text):upper()
             aW.Visible = (text ~= "" and text ~= nil)
         end
 
@@ -12998,8 +12995,7 @@ do
                     Position = UDim2.new(0, au.UIPadding / 2, 1, -(au.UIPadding / 2)),
                     AnchorPoint = Vector2.new(0, 1),
                     BackgroundTransparency = 1,
-                    Visible = au.User.Enabled or false,
-                    ClipsDescendants = true
+                    Visible = au.User.Enabled or false
                 },
                 {
                     ak.NewRoundFrame(
@@ -13012,24 +13008,6 @@ do
                             },
                             ImageTransparency = 1,
                             Name = "Outline"
-                        },
-                        {
-                            al(
-                                "UIGradient",
-                                {
-                                    Rotation = 78,
-                                    Color = ColorSequence.new {
-                                        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
-                                        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-                                        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
-                                    },
-                                    Transparency = NumberSequence.new {
-                                        NumberSequenceKeypoint.new(0.0, 0.1),
-                                        NumberSequenceKeypoint.new(0.5, 1),
-                                        NumberSequenceKeypoint.new(1.0, 0.1)
-                                    }
-                                }
-                            )
                         }
                     ),
                     ak.NewRoundFrame(
@@ -13070,7 +13048,7 @@ do
                                     AutomaticSize = "XY",
                                     BackgroundTransparency = 1,
                                     ClipsDescendants = true,
-                                    Size = UDim2.new(1, -55, 0, 42)
+                                    Size = UDim2.new(1, -60, 1, 0) -- Scaled for flexible widths
                                 },
                                 {
                                     al(
@@ -13249,7 +13227,6 @@ do
                     warn("[ WindUI.Window.Background ] Failed to load custom asset: " .. tostring(h))
                     return
                 end
-                warn "[ WindUI.Window.Background ] VideoFrame may not work with custom video"
                 b = h
             end
 
@@ -13695,26 +13672,6 @@ do
                             },
                             ImageTransparency = au.Topbar.ButtonsType == "Default" and 1 or .8,
                             Name = "Outline"
-                        },
-                        {
-                            au.Topbar.ButtonsType == "Default" and
-                                al(
-                                    "UIGradient",
-                                    {
-                                        Rotation = 45,
-                                        Color = ColorSequence.new {
-                                            ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
-                                            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-                                            ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
-                                        },
-                                        Transparency = NumberSequence.new {
-                                            NumberSequenceKeypoint.new(0.0, 0.1),
-                                            NumberSequenceKeypoint.new(0.5, 1),
-                                            NumberSequenceKeypoint.new(1.0, 0.1)
-                                        }
-                                    }
-                                ) or
-                                nil
                         }
                     ),
                     B
@@ -14025,7 +13982,7 @@ do
                         },
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
-                        ):Play()
+                    ):Play()
 
                     if au.UIElements.BackgroundGradient then
                         am(
@@ -14393,12 +14350,6 @@ do
         v:OnChange(
             function(x)
                 au.CurrentTab = x
-                if aSBT and x.Button then
-                    am(aSBT, 0.25, { 
-                        Size = UDim2.new(0, 4, 0, x.Button.AbsoluteSize.Y - 12),
-                        Position = UDim2.new(0, -au.UIPadding/2 + 2, 0, x.Button.Position.Y.Offset + 6)
-                    }):Play()
-                end
             end
         )
 
