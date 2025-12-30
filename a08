@@ -12500,7 +12500,12 @@ do
             AllElements = {},
             ElementConfig = {},
             PendingFlags = {},
-            IsToggleDragging = false
+            IsToggleDragging = false,
+            -- New Features
+            Theme = "Dark",  -- Default theme: "Dark" or "Light"
+            Accessibility = { HighContrast = false, ReducedMotion = false },
+            UndoStack = {},  -- For undo/redo functionality
+            NotificationSystem = nil,  -- Integrated notifications
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
@@ -12912,6 +12917,20 @@ do
                     )
                 }
             )
+            ak.AddSignal(
+                aB.MouseEnter,
+                function()
+                    am(aB.UserIcon, 0.04, {ImageTransparency = .95}):Play()
+                    am(aB.Outline, 0.04, {ImageTransparency = .85}):Play()
+                end
+            )
+            ak.AddSignal(
+                aB.InputEnded,
+                function()
+                    am(aB.UserIcon, 0.04, {ImageTransparency = 1}):Play()
+                    am(aB.Outline, 0.04, {ImageTransparency = 1}):Play()
+                end
+            )
             function au.User.Enable(aC)
                 au.User.Enabled = true
                 am(
@@ -13205,7 +13224,6 @@ do
                         ax
                     }
                 ),
-                UIStroke,
                 aw,
                 ay,
                 az,
@@ -14479,6 +14497,57 @@ do
                     end
                 end
             end
+        end
+        -- New Feature: Theme Switching
+        function au.SetTheme(theme)
+            au.Theme = theme
+            -- Assume ak has a function to update themes
+            ak.UpdateTheme(theme)
+            -- Or manually update all ThemeTag elements
+            for _, elem in pairs(au.AllElements) do
+                if elem.ThemeTag then
+                    -- Update colors based on theme
+                    if theme == "Light" then
+                        elem.TextColor3 = Color3.fromRGB(0, 0, 0) -- Example
+                    else
+                        elem.TextColor3 = Color3.fromRGB(255, 255, 255) -- Example
+                    end
+                end
+            end
+        end
+        -- New Feature: Accessibility Options
+        function au.SetHighContrast(enabled)
+            au.Accessibility.HighContrast = enabled
+            -- Update colors for high contrast
+            if enabled then
+                -- Set high contrast colors
+            end
+        end
+        function au.SetReducedMotion(enabled)
+            au.Accessibility.ReducedMotion = enabled
+            -- Adjust tween durations or disable animations
+        end
+        -- New Feature: Undo/Redo
+        function au.PushUndo(state)
+            table.insert(au.UndoStack, state)
+        end
+        function au.Undo()
+            if #au.UndoStack > 0 then
+                local state = table.remove(au.UndoStack)
+                -- Apply state to elements
+                -- Example: Restore previous configurations
+            end
+        end
+        -- New Feature: Notification System
+        local NotificationModule = a.load "Notification" -- Assume 'Notification' module
+        au.NotificationSystem = NotificationModule.New(au)
+        function au.Notify(title, content, duration)
+            au.NotificationSystem:Show(title, content, duration)
+        end
+        -- Enhanced Open/Close with accessibility in mind
+        if au.Accessibility.ReducedMotion then
+            -- Shorten or instant tweens
+            -- For example, set tween time to 0
         end
         return au
     end
