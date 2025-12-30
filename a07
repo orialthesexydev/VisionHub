@@ -12427,8 +12427,8 @@ do
     end
     function a.Y()
     local aa = (cloneref or clonereference or function(aa)
-            return aa
-        end)
+        return aa
+    end)
     local ae = aa(game:GetService "UserInputService")
     aa(game:GetService "RunService")
     local af = aa(game:GetService "Players")
@@ -12518,7 +12518,6 @@ do
         if au.Topbar == {} then
             au.Topbar = {Height = 52, ButtonsType = "Default"}
         end
-        local footerHeight = au.Footer.Height or (au.Footer and 40 or 0)
         if au.Folder then
             if not isfolder("WindUI/" .. au.Folder) then
                 makefolder("WindUI/" .. au.Folder)
@@ -12674,7 +12673,7 @@ do
                     0,
                     au.SideBarWidth,
                     1,
-                    (au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height) - footerHeight
+                    au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height
                 ),
                 Position = UDim2.new(0, 0, 0, au.Topbar.Height),
                 BackgroundTransparency = 1,
@@ -12701,9 +12700,9 @@ do
             al(
             "Frame",
             {
-                Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - footerHeight),
-                Position = UDim2.new(1, 0, 0, au.Topbar.Height),
-                AnchorPoint = Vector2.new(1, 0),
+                Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height),
+                Position = UDim2.new(1, 0, 1, 0),
+                AnchorPoint = Vector2.new(1, 1),
                 BackgroundTransparency = 1
             },
             {
@@ -12918,7 +12917,7 @@ do
                 am(
                     au.UIElements.SideBarContainer,
                     .25,
-                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2) - footerHeight)},
+                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2))},
                     Enum.EasingStyle.Quint,
                     Enum.EasingDirection.Out
                 ):Play()
@@ -12929,7 +12928,7 @@ do
                 am(
                     au.UIElements.SideBarContainer,
                     .25,
-                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - footerHeight)},
+                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height)},
                     Enum.EasingStyle.Quint,
                     Enum.EasingDirection.Out
                 ):Play()
@@ -13172,48 +13171,6 @@ do
                 }
             }
         )
-        local footer
-        if au.Footer then
-            footer = al(
-                "Frame",
-                {
-                    Size = UDim2.new(1, 0, 0, footerHeight),
-                    Position = UDim2.new(0, 0, 1, 0),
-                    AnchorPoint = Vector2.new(0, 1),
-                    BackgroundTransparency = 1,
-                    Name = "Footer"
-                },
-                {
-                    al(
-                        "TextLabel",
-                        {
-                            Text = au.Footer.Text or "",
-                            FontFace = Font.new(ak.Font, Enum.FontWeight.Regular),
-                            TextSize = 14,
-                            ThemeTag = {
-                                TextColor3 = "Text"
-                            },
-                            BackgroundTransparency = 1,
-                            Size = UDim2.new(1, 0, 1, 0),
-                            TextXAlignment = "Center",
-                            Name = "FooterText"
-                        }
-                    )
-                }
-            )
-            au.UIElements.Footer = footer
-        end
-        local sidebarResizeBar = al(
-            "Frame",
-            {
-                Size = UDim2.new(0, 5, 1, -au.Topbar.Height - footerHeight),
-                Position = UDim2.new(0, au.SideBarWidth, 0, au.Topbar.Height),
-                BackgroundTransparency = 1,
-                ZIndex = 100,
-                Active = true,
-                Name = "SidebarResizeBar"
-            }
-        )
         au.UIElements.Main =
             al(
             "Frame",
@@ -13399,9 +13356,7 @@ do
                                     }
                                 )
                             }
-                        ),
-                        footer,
-                        sidebarResizeBar
+                        )
                     }
                 )
             }
@@ -13494,21 +13449,21 @@ do
                         {
                             au.Topbar.ButtonsType == "Default" and
                                 al(
-                                    "UIGradient",
-                                    {
-                                        Rotation = 45,
-                                        Color = ColorSequence.new {
-                                            ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
-                                            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-                                            ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
-                                        },
-                                        Transparency = NumberSequence.new {
-                                            NumberSequenceKeypoint.new(0.0, 0.1),
-                                            NumberSequenceKeypoint.new(0.5, 1),
-                                            NumberSequenceKeypoint.new(1.0, 0.1)
-                                        }
+                                "UIGradient",
+                                {
+                                    Rotation = 45,
+                                    Color = ColorSequence.new {
+                                        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+                                        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+                                        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
+                                    },
+                                    Transparency = NumberSequence.new {
+                                        NumberSequenceKeypoint.new(0.0, 0.1),
+                                        NumberSequenceKeypoint.new(0.5, 1),
+                                        NumberSequenceKeypoint.new(1.0, 0.1)
                                     }
-                                ) or
+                                }
+                            ) or
                                 nil
                         }
                     ),
@@ -14045,12 +14000,6 @@ do
         function au.SetCurrentConfig(r, u)
             au.CurrentConfig = u
         end
-        function au.SetFooterText(r, text)
-            if au.Footer then
-                au.Footer.Text = text
-                au.UIElements.Footer.FooterText.Text = text
-            end
-        end
         do
             local r = 40
             local u = ah.ViewportSize
@@ -14395,45 +14344,6 @@ do
             end
             return aq:New(C, au.UIElements.Main.Main.Topbar.Center)
         end
-        local isResizingSidebar = false
-        local initialSidebarWidth
-        local initialMouseX
-        ak.AddSignal(
-            sidebarResizeBar.InputBegan,
-            function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    isResizingSidebar = true
-                    initialSidebarWidth = au.SideBarWidth
-                    initialMouseX = input.Position.X
-                end
-            end
-        )
-        ak.AddSignal(
-            ae.InputChanged,
-            function(input)
-                if isResizingSidebar and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                    local delta = input.Position.X - initialMouseX
-                    local newWidth = math.clamp(initialSidebarWidth + delta, 100, 400)
-                    au.SideBarWidth = newWidth
-                    au.UIElements.SideBarContainer.Size = UDim2.new(
-                        0,
-                        newWidth,
-                        1,
-                        (au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height) - footerHeight
-                    )
-                    au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height - footerHeight)
-                    sidebarResizeBar.Position = UDim2.new(0, newWidth, 0, au.Topbar.Height)
-                end
-            end
-        )
-        ak.AddSignal(
-            ae.InputEnded,
-            function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    isResizingSidebar = false
-                end
-            end
-        )
         local function startResizing(B)
             if au.CanResize then
                 isResizing = true
