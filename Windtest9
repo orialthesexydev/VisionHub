@@ -12543,7 +12543,6 @@ do
                 return aa
             end)
         local ae = aa(game:GetService "UserInputService")
-        local http = aa(game:GetService "HttpService")
         local rs = aa(game:GetService "RunService")
         local af = aa(game:GetService "Players")
         local mouse = af.LocalPlayer:GetMouse()
@@ -12584,10 +12583,6 @@ do
                 HideSearchBar = as.HideSearchBar ~= false,
                 ScrollBarEnabled = as.ScrollBarEnabled or false,
                 SideBarWidth = as.SideBarWidth or 200,
-                SplitterEnabled = as.SplitterEnabled ~= false,
-                SplitterWidth = 3,
-                MinSideBarWidth = 100,
-                MaxSideBarWidth = 400,
                 Acrylic = as.Acrylic or false,
                 NewElements = as.NewElements or false,
                 IgnoreAlerts = as.IgnoreAlerts or false,
@@ -12650,12 +12645,6 @@ do
                 end
                 if not isfolder(au.Folder .. "/assets") then
                     makefolder(au.Folder .. "/assets")
-                end
-                local configFile = "WindUI/" .. au.Folder .. "/window.json"
-                if isfile(configFile) then
-                    local data = http:JSONDecode(readfile(configFile))
-                    au.Position = UDim2.new(data.Position[1], data.Position[2], data.Position[3], data.Position[4])
-                    au.Size = UDim2.new(data.Size[1], data.Size[2], data.Size[3], data.Size[4])
                 end
             end
             local aw =
@@ -12782,24 +12771,11 @@ do
             if au.ScrollBarEnabled then
                 ap(au.UIElements.SideBar, au.UIElements.SideBarContainer.Content, au, 3)
             end
-            if au.SplitterEnabled then
-                au.UIElements.Splitter =
-                    al(
-                    "Frame",
-                    {
-                        Size = UDim2.new(0, au.SplitterWidth, 1, -au.Topbar.Height),
-                        Position = UDim2.new(0, au.SideBarWidth, 0, au.Topbar.Height),
-                        BackgroundTransparency = 0.8,
-                        ThemeTag = { BackgroundColor3 = "Text" },
-                        Name = "Splitter"
-                    }
-                )
-            end
             au.UIElements.MainBar =
                 al(
                 "Frame",
                 {
-                    Size = UDim2.new(1, -au.SideBarWidth - (au.SplitterEnabled and au.SplitterWidth or 0), 1, -au.Topbar.Height),
+                    Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height),
                     Position = UDim2.new(1, 0, 1, 0),
                     AnchorPoint = Vector2.new(1, 1),
                     BackgroundTransparency = 1
@@ -12984,9 +12960,27 @@ do
                                             }
                                         ),
                                         al(
+                                            "TextLabel",
+                                            {
+                                                Text = au.User.Status or "Online",
+                                                TextSize = 13,
+                                                TextTransparency = .8,
+                                                ThemeTag = {
+                                                    TextColor3 = "Text"
+                                                },
+                                                FontFace = Font.new(ak.Font, Enum.FontWeight.Regular),
+                                                AutomaticSize = "Y",
+                                                BackgroundTransparency = 1,
+                                                Size = UDim2.new(1, -27, 0, 0),
+                                                TextTruncate = "AtEnd",
+                                                TextXAlignment = "Left",
+                                                Name = "Status"
+                                            }
+                                        ),
+                                        al(
                                             "UIListLayout",
                                             {
-                                                Padding = UDim.new(0, 4),
+                                                Padding = UDim.new(0, 2),
                                                 HorizontalAlignment = "Left"
                                             }
                                         )
@@ -13041,6 +13035,10 @@ do
                     aB.UserIcon.ImageLabel.Image = GetUserThumb()
                     aB.UserIcon.Frame.DisplayName.Text = aD and "Anonymous" or af.LocalPlayer.DisplayName
                     aB.UserIcon.Frame.UserName.Text = aD and "anonymous" or af.LocalPlayer.Name
+                end
+                function au.User.SetStatus(aC, aD)
+                    au.User.Status = aD
+                    aB.UserIcon.Frame.Status.Text = aD
                 end
                 if au.User.Enabled then
                     au.User:Enable()
@@ -13323,7 +13321,6 @@ do
                                     CornerRadius = UDim.new(0, au.UICorner)
                                 }
                             ),
-                            au.SplitterEnabled and au.UIElements.Splitter or nil,
                             au.UIElements.SideBarContainer,
                             au.UIElements.MainBar,
                             aB,
@@ -13932,13 +13929,6 @@ do
                 )
             end
             function au.Close(r)
-                if au.Folder then
-                    local data = {
-                        Position = {au.Position.X.Scale, au.Position.X.Offset, au.Position.Y.Scale, au.Position.Y.Offset},
-                        Size = {au.Size.X.Scale, au.Size.X.Offset, au.Size.Y.Scale, au.Size.Y.Offset}
-                    }
-                    writefile("WindUI/" .. au.Folder .. "/window.json", http:JSONEncode(data))
-                end
                 local u = {}
                 if au.OnCloseCallback then
                     task.spawn(
@@ -14180,6 +14170,16 @@ do
             au.TabModule = v
             function au.Tab(x, B)
                 B.Parent = au.UIElements.SideBar.Frame
+                local tabBorder = al(
+                    "UIStroke",
+                    {
+                        Transparency = 0.8,
+                        ThemeTag = {
+                            Color = "TabBorder"
+                        }
+                    }
+                )
+                tabBorder.Parent = B
                 return v.New(B, as.WindUI.UIScale)
             end
             function au.SelectTab(x, B)
@@ -14710,60 +14710,15 @@ do
                 end
                 local tween = am(au.UIElements.SideBarContainer, 0.25, {Size = UDim2.new(0, targetWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
                 local conn = rs.Heartbeat:Connect(function()
-                    au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X - (au.SplitterEnabled and au.SplitterWidth or 0), 1, -au.Topbar.Height)
-                    if au.SplitterEnabled then
-                        au.UIElements.Splitter.Position = UDim2.new(0, au.UIElements.SideBarContainer.AbsoluteSize.X, 0, au.Topbar.Height)
-                    end
+                    au.UIElements.MainBar.Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height)
                 end)
                 tween:Play()
                 tween.Completed:Wait()
                 conn:Disconnect()
-                au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth - (au.SplitterEnabled and au.SplitterWidth or 0), 1, -au.Topbar.Height)
-                if au.SplitterEnabled then
-                    au.UIElements.Splitter.Position = UDim2.new(0, targetWidth, 0, au.Topbar.Height)
-                end
+                au.UIElements.MainBar.Size = UDim2.new(1, -targetWidth, 1, -au.Topbar.Height)
                 if not au.SideBarVisible then
                     au.UIElements.SideBarContainer.Visible = false
                 end
-            end
-            if au.SplitterEnabled then
-                ak.AddSignal(au.UIElements.Splitter.MouseEnter, function() mouse.Icon = "rbxasset://SystemCursors/SizeWE" end)
-                ak.AddSignal(au.UIElements.Splitter.MouseLeave, function() mouse.Icon = "" end)
-                local isSplitterResizing = false
-                local initialSplitterPos
-                ak.AddSignal(
-                    au.UIElements.Splitter.InputBegan,
-                    function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                            isSplitterResizing = true
-                            initialSplitterPos = input.Position.X
-                            ay.Active = true
-                            am(ay, 0.1, {ImageTransparency = 0.7}):Play()
-                            input.Changed:Connect(function()
-                                if input.UserInputState == Enum.UserInputState.End then
-                                    isSplitterResizing = false
-                                    ay.Active = false
-                                    am(ay, 0.1, {ImageTransparency = 1}):Play()
-                                end
-                            end)
-                        end
-                    end
-                )
-                ak.AddSignal(
-                    ae.InputChanged,
-                    function(input)
-                        if isSplitterResizing and input.UserInputType == Enum.UserInputType.MouseMovement then
-                            local delta = input.Position.X - initialSplitterPos
-                            local newWidth = au.SideBarWidth + delta
-                            newWidth = math.clamp(newWidth, au.MinSideBarWidth, au.MaxSideBarWidth)
-                            au.SideBarWidth = newWidth
-                            au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, au.UIElements.SideBarContainer.Size.Y.Scale, au.UIElements.SideBarContainer.Size.Y.Offset)
-                            au.UIElements.Splitter.Position = UDim2.new(0, newWidth, 0, au.Topbar.Height)
-                            au.UIElements.MainBar.Size = UDim2.new(1, -newWidth - au.SplitterWidth, 1, -au.Topbar.Height)
-                            initialSplitterPos = input.Position.X
-                        end
-                    end
-                )
             end
             return au
         end
