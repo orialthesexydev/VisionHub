@@ -10719,146 +10719,6 @@ do
 
         return ah
     end
-    function a.AA() -- New Module for MultiSection logic
-        local aa = a.load "b"
-        local ab = aa.New
-        local ac = aa.Tween
-
-        return function(ad)
-            local ae = {
-                __type = "MultiSection",
-                Tabs = {},
-                CurrentTab = nil,
-                Sections = {},
-                UIElements = {}
-            }
-
-            -- Main Container Frame
-            local af = aa.NewRoundFrame(
-                ad.Window.ElementConfig.UICorner,
-                "Squircle",
-                {
-                    Size = UDim2.new(1, 0, 0, 0),
-                    AutomaticSize = "Y",
-                    BackgroundTransparency = 1,
-                    Parent = ad.Parent,
-                    ThemeTag = {
-                        ImageColor3 = "SectionBoxBackground",
-                        ImageTransparency = "SectionBoxBackgroundTransparency"
-                    }
-                }
-            )
-
-            -- Tab Buttons Holder
-            local ag = ab("Frame", {
-                Size = UDim2.new(1, 0, 0, 38),
-                BackgroundTransparency = 1,
-                Parent = af
-            }, {
-                ab("UIListLayout", {
-                    FillDirection = "Horizontal",
-                    Padding = UDim.new(0, 1),
-                    SortOrder = "LayoutOrder"
-                }),
-                ab("Frame", { -- Selection Indicator (Line)
-                    Name = "Indicator",
-                    Size = UDim2.new(0, 0, 0, 2),
-                    Position = UDim2.new(0, 0, 1, -2),
-                    ThemeTag = { BackgroundColor3 = "Primary" },
-                    ZIndex = 5
-                })
-            })
-
-            -- Content Container (where elements of sub-tabs go)
-            local ah = ab("Frame", {
-                Size = UDim2.new(1, 0, 0, 0),
-                AutomaticSize = "Y",
-                BackgroundTransparency = 1,
-                Parent = af,
-                Position = UDim2.new(0, 0, 0, 40)
-            })
-
-            function ae.CreateSubTab(ai, aj)
-                local ak = {
-                    Name = aj,
-                    Container = ab("Frame", {
-                        Size = UDim2.new(1, 0, 0, 0),
-                        AutomaticSize = "Y",
-                        BackgroundTransparency = 1,
-                        Visible = false,
-                        Parent = ah
-                    }, {
-                        ab("UIListLayout", {
-                            Padding = UDim.new(0, ad.Tab.Gap),
-                            SortOrder = "LayoutOrder"
-                        }),
-                        ab("UIPadding", {
-                            PaddingTop = UDim.new(0, 8),
-                            PaddingBottom = UDim.new(0, 8),
-                            PaddingLeft = UDim.new(0, ad.Window.ElementConfig.UIPadding),
-                            PaddingRight = UDim.new(0, ad.Window.ElementConfig.UIPadding)
-                        })
-                    })
-                }
-
-                local al = ab("TextButton", {
-                    Size = UDim2.new(0, 0, 1, 0),
-                    AutomaticSize = "X",
-                    BackgroundTransparency = 1,
-                    Text = aj,
-                    FontFace = Font.new(aa.Font, Enum.FontWeight.SemiBold),
-                    TextSize = 14,
-                    ThemeTag = { TextColor3 = "Text" },
-                    Parent = ag
-                }, {
-                    ab("UIPadding", { PaddingLeft = UDim.new(0, 15), PaddingRight = UDim.new(0, 15) })
-                })
-
-                -- Switching Logic
-                al.MouseButton1Click:Connect(function()
-                    ae:SetTab(aj)
-                end)
-
-                ae.Sections[aj] = ak
-                ae.Tabs[aj] = { Button = al, Container = ak.Container }
-                
-                -- Wrap the container to allow .AddToggle etc.
-                local am = a.load "U"
-                am.Load(ak, ak.Container, am.Elements, ad.Window, ad.WindUI, nil, am, ad.UIScale, ad.Tab)
-                
-                return ak
-            end
-
-            function ae.SetTab(ai, aj)
-                for name, tab in pairs(ae.Tabs) do
-                    local isTarget = (name == aj)
-                    tab.Container.Visible = isTarget
-                    ac(tab.Button, 0.2, { TextTransparency = isTarget and 0 or 0.5 }):Play()
-                    
-                    if isTarget then
-                        -- Move indicator
-                        ac(ag.Indicator, 0.25, {
-                            Size = UDim2.new(0, tab.Button.AbsoluteSize.X, 0, 2),
-                            Position = UDim2.new(0, tab.Button.AbsolutePosition.X - ag.AbsolutePosition.X, 1, -2)
-                        }, Enum.EasingStyle.Quint):Play()
-                    end
-                end
-                ae.CurrentTab = aj
-            end
-
-            for _, tabName in ipairs(ad.Sections or {"Default"}) do
-                ae.CreateSubTab(tabName)
-            end
-
-            task.spawn(function()
-                task.wait()
-                ae:SetTab(ad.Sections[1] or "Default")
-            end)
-
-            ae.ElementFrame = af
-            return ae
-        end
-    end
     function a.R()
         local aa = a.load "b"
         local ae = aa.New
@@ -11044,8 +10904,7 @@ do
                 Divider = a.load "J",
                 Space = a.load "R",
                 Image = a.load "S",
-                Group = a.load "T",
-                MultiSection = a.load "AA"
+                Group = a.load "T"
             },
             Load = function(aa, ae, af, ah, aj, ak, al, am, an)
                 for ao, ap in next, af do
@@ -12968,6 +12827,67 @@ do
             }
         )
 
+        -- ADVANCED SIDEBAR UX: REORDER & VISUAL ENHANCEMENTS
+        local aSBT = al("Frame", {
+            Name = "Indicator",
+            Size = UDim2.new(0, 4, 0, 0),
+            Position = UDim2.new(0, 0, 0, 0),
+            ThemeTag = { BackgroundColor3 = "Accent" },
+            ZIndex = 105,
+            Visible = true,
+        }, { al("UICorner", { CornerRadius = UDim.new(1, 0) }) })
+        aSBT.Parent = au.UIElements.SideBar
+
+        local aSR = al("Frame", {
+            Name = "SidebarResizeHandle",
+            Size = UDim2.new(0, 8, 1, -20),
+            Position = UDim2.new(1, -4, 0, 10),
+            BackgroundTransparency = 1,
+            Parent = au.UIElements.SideBarContainer,
+            ZIndex = 101,
+            Active = true
+        }, {
+            al("Frame", {
+                Name = "Visual",
+                Size = UDim2.new(0, 2, 0, 40),
+                AnchorPoint = Vector2.new(0.5, 0.5),
+                Position = UDim2.new(0.5, 0, 0.5, 0),
+                BackgroundTransparency = 0.8,
+                ThemeTag = { BackgroundColor3 = "Text" }
+            }, { al("UICorner", { CornerRadius = UDim.new(1, 0) }) })
+        })
+
+        local isResizingSidebar = false
+        ak.AddSignal(aSR.InputBegan, function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not au.Closed then
+                isResizingSidebar = true
+                am(aSR.Visual, 0.2, { BackgroundTransparency = 0.2, Size = UDim2.new(0, 4, 0, 60) }):Play()
+            end
+        end)
+
+        ak.AddSignal(ae.InputChanged, function(input)
+            if isResizingSidebar and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                local relativeMousePos = (input.Position.X - au.UIElements.Main.AbsolutePosition.X) / as.WindUI.UIScale
+                local newWidth = math.clamp(relativeMousePos, 60, 320)
+                au.SideBarWidth = newWidth
+                
+                au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, 1, au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height)
+                au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height)
+                
+                if aB then
+                    aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), 0, 42 + au.UIPadding)
+                    aB.UserIcon.Frame.Visible = newWidth > 140
+                end
+            end
+        end)
+
+        ak.AddSignal(ae.InputEnded, function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                isResizingSidebar = false
+                am(aSR.Visual, 0.2, { BackgroundTransparency = 0.8, Size = UDim2.new(0, 2, 0, 40) }):Play()
+            end
+        end)
+
         if au.ScrollBarEnabled then
             ap(au.UIElements.SideBar, au.UIElements.SideBarContainer.Content, au, 3)
         end
@@ -13007,63 +12927,24 @@ do
 
         -- Watermark Feature
         local aW = al("TextLabel", {
+            Name = "Watermark",
             Text = "",
             FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
-            TextSize = 12,
-            TextTransparency = 0.5,
-            ThemeTag = {
-                TextColor3 = "Text"
-            },
+            TextSize = 13,
+            TextTransparency = 0.6,
+            ThemeTag = { TextColor3 = "Text" },
             BackgroundTransparency = 1,
             AnchorPoint = Vector2.new(1, 1),
-            Position = UDim2.new(1, -15, 1, -10),
+            Position = UDim2.new(1, -12, 1, -8),
             AutomaticSize = "XY",
             ZIndex = 9999,
-            Visible = false,
-            TextXAlignment = "Right"
+            Visible = false
         })
 
         function au.SetWatermark(self, text)
             aW.Text = text
-            aW.Visible = text ~= "" and true or false
+            aW.Visible = (text ~= "" and text ~= nil)
         end
-
-        -- Sidebar Resize Handle
-        local aSR = al("Frame", {
-            Size = UDim2.new(0, 4, 1, 0),
-            Position = UDim2.new(1, -2, 0, 0),
-            BackgroundTransparency = 1,
-            Parent = au.UIElements.SideBarContainer,
-            ZIndex = 100,
-            Active = true,
-            Name = "ResizeHandle"
-        })
-
-        local isSidebarResizing = false
-        ak.AddSignal(aSR.InputBegan, function(input)
-            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not au.Closed then
-                isSidebarResizing = true
-            end
-        end)
-
-        ak.AddSignal(ae.InputChanged, function(input)
-            if isSidebarResizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                local relativeX = (input.Position.X - au.UIElements.Main.AbsolutePosition.X) / as.WindUI.UIScale
-                local newWidth = math.clamp(relativeX, 120, 300)
-                au.SideBarWidth = newWidth
-                au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, 1, au.User.Enabled and -au.Topbar.Height - 42 - (au.UIPadding * 2) or -au.Topbar.Height)
-                au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height)
-                if aB then
-                    aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), 0, 42 + au.UIPadding)
-                end
-            end
-        end)
-
-        ak.AddSignal(ae.InputEnded, function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                isSidebarResizing = false
-            end
-        end)
 
         local aA =
             al(
@@ -13110,14 +12991,15 @@ do
                 {
                     Size = UDim2.new(
                         0,
-                        au.SideBarWidth - (au.UIPadding / 2),
+                        (au.SideBarWidth) - (au.UIPadding / 2),
                         0,
                         42 + (au.UIPadding)
                     ),
                     Position = UDim2.new(0, au.UIPadding / 2, 1, -(au.UIPadding / 2)),
                     AnchorPoint = Vector2.new(0, 1),
                     BackgroundTransparency = 1,
-                    Visible = au.User.Enabled or false
+                    Visible = au.User.Enabled or false,
+                    ClipsDescendants = true
                 },
                 {
                     ak.NewRoundFrame(
@@ -13188,7 +13070,7 @@ do
                                     AutomaticSize = "XY",
                                     BackgroundTransparency = 1,
                                     ClipsDescendants = true,
-                                    Size = UDim2.new(1, -60, 1, 0)
+                                    Size = UDim2.new(1, -55, 0, 42)
                                 },
                                 {
                                     al(
@@ -14143,7 +14025,7 @@ do
                         },
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
-                    ):Play()
+                        ):Play()
 
                     if au.UIElements.BackgroundGradient then
                         am(
@@ -14195,9 +14077,7 @@ do
                         Enum.EasingDirection.Out
                     ):Play()
                     if UIStroke then
-                        am(UIStroke, 0.25, {Transparency = .8}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play(
-
-                        )
+                        am(UIStroke, 0.25, {Transparency = .8}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
                     end
 
                     task.spawn(
@@ -14315,9 +14195,7 @@ do
                 Enum.EasingStyle.Exponential,
                 Enum.EasingDirection.InOut
             ):Play()
-            am(ax.ImageLabel, .3, {ImageTransparency = 1}, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out):Play(
-
-            )
+            am(ax.ImageLabel, .3, {ImageTransparency = 1}, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out):Play()
             l:Set(false)
             au.CanResize = false
 
@@ -14515,6 +14393,12 @@ do
         v:OnChange(
             function(x)
                 au.CurrentTab = x
+                if aSBT and x.Button then
+                    am(aSBT, 0.25, { 
+                        Size = UDim2.new(0, 4, 0, x.Button.AbsoluteSize.Y - 12),
+                        Position = UDim2.new(0, -au.UIPadding/2 + 2, 0, x.Button.Position.Y.Offset + 6)
+                    }):Play()
+                end
             end
         )
 
