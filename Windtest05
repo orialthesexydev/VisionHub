@@ -12616,7 +12616,8 @@ do
                 PendingFlags = {},
                 IsToggleDragging = false,
                 SideBarVisible = true,
-                CanDrag = true -- New: Runtime toggle for window dragging
+                CanDrag = true,
+                IsInteractable = true -- New Feature: Interaction State
             }
             au.UICorner = au.Radius
             au.ElementConfig = {
@@ -13231,6 +13232,26 @@ do
             if au.Author then
                 g = createAuthor(au.Author)
             end
+
+            -- New Feature: Status Indicator
+            local statusIndicator = al(
+                "TextLabel",
+                {
+                    Text = "",
+                    FontFace = Font.new(ak.Font, Enum.FontWeight.SemiBold),
+                    BackgroundTransparency = 1,
+                    AutomaticSize = "XY",
+                    Name = "Status",
+                    TextXAlignment = "Left",
+                    TextSize = 10,
+                    LayoutOrder = 3,
+                    Visible = false,
+                    ThemeTag = {
+                        TextColor3 = "Accent"
+                    }
+                }
+            )
+
             local j =
                 al(
                 "TextLabel",
@@ -13247,6 +13268,23 @@ do
                     }
                 }
             )
+            
+            -- Interaction Block Layer
+            local interactLayer = al(
+                "Frame",
+                {
+                    Size = UDim2.new(1, 0, 1, 0),
+                    BackgroundColor3 = Color3.new(0,0,0),
+                    BackgroundTransparency = 1,
+                    ZIndex = 10000,
+                    Visible = false,
+                    Name = "InteractLock"
+                },
+                {
+                    al("UICorner", { CornerRadius = UDim.new(0, au.Radius) })
+                }
+            )
+
             au.UIElements.Main =
                 al(
                 "Frame",
@@ -13261,6 +13299,7 @@ do
                 {
                     as.WindUI.UIScaleObj,
                     au.AcrylicPaint and au.AcrylicPaint.Frame or nil,
+                    interactLayer,
                     aA,
                     ak.NewRoundFrame(
                         au.UICorner,
@@ -13351,7 +13390,11 @@ do
                                                             VerticalAlignment = "Center"
                                                         }
                                                     ),
-                                                    j,
+                                                    al("Frame", { AutomaticSize="XY", BackgroundTransparency=1, LayoutOrder=1 }, {
+                                                        al("UIListLayout", { FillDirection="Horizontal", Padding=UDim.new(0,5), VerticalAlignment="Center" }),
+                                                        j,
+                                                        statusIndicator
+                                                    }),
                                                     g
                                                 }
                                             ),
@@ -13621,8 +13664,11 @@ do
                     if not au.Closed and au.CanDrag then
                         if l and m == f.Frame then
                             am(f, .1, {ImageTransparency = .35}):Play()
+                            -- Feature: Background Fading when dragging
+                            am(au.UIElements.Main.Background, 0.3, { ImageTransparency = 0.5 }):Play()
                         else
                             am(f, .2, {ImageTransparency = .8}):Play()
+                            am(au.UIElements.Main.Background, 0.3, { ImageTransparency = au.Transparent and as.WindUI.TransparencyValue or 0 }):Play()
                         end
                         au.Position = au.UIElements.Main.Position
                         au.Dragging = l
@@ -13727,6 +13773,22 @@ do
             -- New Function: Drag Toggle
             function au.SetDraggable(m, bool)
                 au.CanDrag = bool
+            end
+
+            -- New Function: Set Status
+            function au.SetStatus(m, text, color)
+                statusIndicator.Text = text or ""
+                statusIndicator.Visible = (text ~= "" and text ~= nil)
+                if color then
+                    statusIndicator.TextColor3 = color
+                end
+            end
+
+            -- New Function: Set Interactable
+            function au.SetInteractable(m, bool)
+                au.IsInteractable = bool
+                interactLayer.Visible = not bool
+                am(interactLayer, 0.2, { BackgroundTransparency = bool and 1 or 0.85 }):Play()
             end
 
             -- New Function: Banner Information Pop-up
