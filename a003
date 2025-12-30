@@ -12983,8 +12983,6 @@ do
                 )
             end
         end
-        local aC
-        local aD
         local aE = false
         local aF
         local b = typeof(au.Background) == "string" and string.match(au.Background, "^video:(.+)") or nil
@@ -13218,6 +13216,12 @@ do
                 )
             }
         )
+        local UIStroke = al("UIStroke", {
+            Transparency = 1,
+            ThemeTag = {
+                Color = "WindowBorder"
+            }
+        })
         au.UIElements.Main =
             al(
             "Frame",
@@ -13249,10 +13253,10 @@ do
                     {
                         aF,
                         f,
-                        ax
+                        ax,
+                        UIStroke
                     }
                 ),
-                UIStroke,
                 aw,
                 ay,
                 az,
@@ -13275,7 +13279,6 @@ do
                         au.UIElements.SideBarContainer,
                         au.UIElements.MainBar,
                         aB,
-                        aD,
                         al(
                             "Frame",
                             {
@@ -13285,7 +13288,6 @@ do
                                 Name = "Topbar"
                             },
                             {
-                                aC,
                                 al(
                                     "Frame",
                                     {
@@ -13596,10 +13598,9 @@ do
             )
             return C
         end
-        local l =
-            ak.Drag(
+        local l = ak.Drag(
             au.UIElements.Main,
-            {au.UIElements.Main.Main.Topbar, f.Frame},
+            {au.UIElements.Main.Main.Topbar},
             function(l, m)
                 if not au.Closed then
                     if l and m == f.Frame then
@@ -13872,17 +13873,15 @@ do
                         Enum.EasingStyle.Quint,
                         Enum.EasingDirection.Out
                     ):Play()
-                    if UIStroke then
-                        am(UIStroke, 0.25, {Transparency = .8}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play(
-                        )
-                    end
+                    am(UIStroke, 0.25, {Transparency = .8}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play(
+                    )
                     task.spawn(
                         function()
                             task.wait(.3)
                             am(
                                 f,
                                 .45,
-                                {Size = UDim2.new(0, 200, 0, 4), ImageTransparency = .8},
+                                {Size = UDim2.new(1, 0, 0, 4), ImageTransparency = .8},
                                 Enum.EasingStyle.Exponential,
                                 Enum.EasingDirection.Out
                             ):Play()
@@ -13977,9 +13976,7 @@ do
                 end
             end
             am(aA, 0.25, {ImageTransparency = 1}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-            if UIStroke then
-                am(UIStroke, 0.25, {Transparency = 1}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-            end
+            am(UIStroke, 0.25, {Transparency = 1}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
             am(
                 f,
                 .3,
@@ -14528,6 +14525,40 @@ do
                 end
             end
         )
+        local isBottomResizing = false
+        local initialHeight
+        local initialBottomPos
+        ak.AddSignal(
+            f.Frame.InputBegan,
+            function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isBottomResizing = true
+                    initialHeight = au.Size.Y.Offset
+                    initialBottomPos = input.Position.Y
+                    am(f, .1, {ImageTransparency = .35}):Play()
+                end
+            end
+        )
+        ak.AddSignal(
+            ae.InputChanged,
+            function(input)
+                if isBottomResizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    local delta = input.Position.Y - initialBottomPos
+                    local newHeight = math.clamp(initialHeight + delta * 2, au.MinSize.Y, au.MaxSize.Y)
+                    au.Size = UDim2.new(au.Size.X.Scale, au.Size.X.Offset, au.Size.Y.Scale, newHeight)
+                    am(au.UIElements.Main, 0, {Size = au.Size}):Play()
+                end
+            end
+        )
+        ak.AddSignal(
+            ae.InputEnded,
+            function(input)
+                if isBottomResizing and input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isBottomResizing = false
+                    am(f, .1, {ImageTransparency = .8}):Play()
+                end
+            end
+        )
         local function startResizing(B)
             if au.CanResize then
                 isResizing = true
@@ -14598,7 +14629,7 @@ do
         function onDoubleClick()
             au:ToggleFullscreen()
         end
-        f.Frame.MouseButton1Up:Connect(
+        au.UIElements.Main.Main.Topbar.MouseButton1Up:Connect(
             function()
                 local H = tick()
                 local J = au.Position
