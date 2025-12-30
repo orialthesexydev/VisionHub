@@ -13603,11 +13603,6 @@ do
             {au.UIElements.Main.Main.Topbar},
             function(l, m)
                 if not au.Closed then
-                    if l and m == f.Frame then
-                        am(f, .1, {ImageTransparency = .35}):Play()
-                    else
-                        am(f, .2, {ImageTransparency = .8}):Play()
-                    end
                     au.Position = au.UIElements.Main.Position
                     au.Dragging = l
                     if not l then
@@ -13634,7 +13629,7 @@ do
                                 newCenterY = screenSize.Y - halfY
                             end
                             if newCenterX ~= centerX or newCenterY ~= centerY then
-                                local newPos = UDim2.new(0, newCenterX, 0, newCenterY)
+                                local newPos = UDim2.new(0, newCenterX - halfX, 0, newCenterY - halfY)
                                 am(win, 0.2, {Position = newPos}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
                                 au.Position = newPos
                             end
@@ -14629,34 +14624,37 @@ do
         function onDoubleClick()
             au:ToggleFullscreen()
         end
-        au.UIElements.Main.Main.Topbar.MouseButton1Up:Connect(
-            function()
-                local H = tick()
-                local J = au.Position
-                G = G + 1
-                if G == 1 then
-                    B = H
-                    F = J
-                    task.spawn(
-                        function()
-                            task.wait(C)
-                            if G == 1 then
-                                G = 0
-                                F = nil
+        ak.AddSignal(
+            au.UIElements.Main.Main.Topbar.InputEnded,
+            function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    local H = tick()
+                    local J = au.Position
+                    G = G + 1
+                    if G == 1 then
+                        B = H
+                        F = J
+                        task.spawn(
+                            function()
+                                task.wait(C)
+                                if G == 1 then
+                                    G = 0
+                                    F = nil
+                                end
                             end
+                        )
+                    elseif G == 2 then
+                        if H - B <= C and J == F then
+                            onDoubleClick()
                         end
-                    )
-                elseif G == 2 then
-                    if H - B <= C and J == F then
-                        onDoubleClick()
+                        G = 0
+                        F = nil
+                        B = 0
+                    else
+                        G = 1
+                        B = H
+                        F = J
                     end
-                    G = 0
-                    F = nil
-                    B = 0
-                else
-                    G = 1
-                    B = H
-                    F = J
                 end
             end
         )
