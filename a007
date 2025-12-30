@@ -12700,7 +12700,7 @@ do
             al(
             "Frame",
             {
-                Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height),
+                Size = UDim2.new(1, -au.SideBarWidth - 4, 1, -au.Topbar.Height),
                 Position = UDim2.new(1, 0, 1, 0),
                 AnchorPoint = Vector2.new(1, 1),
                 BackgroundTransparency = 1
@@ -12770,7 +12770,7 @@ do
                 {
                     Size = UDim2.new(
                         0,
-                        (au.UIElements.SideBarContainer.AbsoluteSize.X) - (au.UIPadding / 2),
+                        (au.SideBarWidth) - (au.UIPadding / 2),
                         0,
                         32 + (au.UIPadding)
                     ),
@@ -13171,6 +13171,20 @@ do
                 }
             }
         )
+        local UIStroke = al("UIStroke", {
+            Transparency = 1,
+            ThemeTag = {
+                Color = "WindowStroke"
+            }
+        })
+        au.UIElements.Splitter = al("Frame", {
+            Size = UDim2.new(0, 4, 1, -au.Topbar.Height),
+            Position = UDim2.new(0, au.SideBarWidth, 0, au.Topbar.Height),
+            BackgroundTransparency = 0.8,
+            BackgroundColor3 = Color3.fromRGB(100, 100, 100),
+            Active = true,
+            ZIndex = 100
+        })
         au.UIElements.Main =
             al(
             "Frame",
@@ -13209,6 +13223,7 @@ do
                 aw,
                 ay,
                 az,
+                au.UIElements.Splitter,
                 al(
                     "Frame",
                     {
@@ -13551,6 +13566,15 @@ do
                     end
                     au.Position = au.UIElements.Main.Position
                     au.Dragging = l
+                    if not l then
+                        local absPos = au.UIElements.Main.AbsolutePosition
+                        local size = au.UIElements.Main.AbsoluteSize
+                        local vp = ah.ViewportSize
+                        local newAbsX = math.clamp(absPos.X, 0, vp.X - size.X)
+                        local newAbsY = math.clamp(absPos.Y, 0, vp.Y - size.Y)
+                        au.UIElements.Main.Position = UDim2.new(0, newAbsX, 0, newAbsY)
+                        au.Position = au.UIElements.Main.Position
+                    end
                 end
             end
         )
@@ -14268,7 +14292,7 @@ do
                     R.Size = UDim2.new(0, 0, 1, 0)
                     R.AutomaticSize = Enum.AutomaticSize.X
                 end
-                wait()
+                task.wait()
                 local S = L.AbsoluteContentSize.X / as.WindUI.UIScale
                 local T = M.AbsoluteSize.X / as.WindUI.UIScale
                 if S > T then
@@ -14301,7 +14325,7 @@ do
             end
             ak.AddSignal(G.UIElements.Main:GetPropertyChangedSignal "AbsoluteSize", CheckButtonsOverflow)
             CheckButtonsOverflow()
-            wait()
+            task.wait()
             G:Open()
             return G
         end
@@ -14344,6 +14368,9 @@ do
             end
             return aq:New(C, au.UIElements.Main.Main.Topbar.Center)
         end
+        local isResizing = false
+        local initialSize
+        local initialInputPosition
         local function startResizing(B)
             if au.CanResize then
                 isResizing = true
@@ -14480,6 +14507,40 @@ do
                 end
             end
         end
+        ak.AddSignal(
+            au.UIElements.Splitter.InputBegan,
+            function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    local startPos = input.Position.X
+                    local startWidth = au.SideBarWidth
+                    local conn1, conn2
+                    conn1 = ae.InputChanged:Connect(function(input2)
+                        if input2.UserInputType == Enum.UserInputType.MouseMovement then
+                            local delta = input2.Position.X - startPos
+                            local newWidth = math.clamp(startWidth + delta, 100, 300)
+                            au.SideBarWidth = newWidth
+                            au.UIElements.SideBarContainer.Size = UDim2.new(
+                                0,
+                                newWidth,
+                                1,
+                                au.User.Enabled and -au.Topbar.Height - 32 - (au.UIPadding * 2) or -au.Topbar.Height
+                            )
+                            au.UIElements.Splitter.Position = UDim2.new(0, newWidth, 0, au.Topbar.Height)
+                            au.UIElements.MainBar.Size = UDim2.new(1, -newWidth - 4, 1, -au.Topbar.Height)
+                            if au.User.Enabled then
+                                aB.Size = UDim2.new(0, newWidth - (au.UIPadding / 2), 0, 32 + (au.UIPadding))
+                            end
+                        end
+                    end)
+                    conn2 = input.Changed:Connect(function()
+                        if input.UserInputState == Enum.UserInputState.End then
+                            conn1:Disconnect()
+                            conn2:Disconnect()
+                        end
+                    end)
+                end
+            end
+        )
         return au
     end
 end
