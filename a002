@@ -12442,6 +12442,7 @@ do
     local ap = a.load "u".New
     local aq = a.load "v"
     local ar = a.load "w"
+    local http = aa(game:GetService "HttpService")
     return function(as)
         local au = {
             Title = as.Title or "UI Library",
@@ -12469,6 +12470,8 @@ do
             HideSearchBar = as.HideSearchBar ~= false,
             ScrollBarEnabled = as.ScrollBarEnabled or false,
             SideBarWidth = as.SideBarWidth or 200,
+            SideBarMinWidth = as.SideBarMinWidth or 100,
+            SideBarMaxWidth = as.SideBarMaxWidth or 400,
             Acrylic = as.Acrylic or false,
             NewElements = as.NewElements or false,
             IgnoreAlerts = as.IgnoreAlerts or false,
@@ -12705,7 +12708,7 @@ do
             al(
             "Frame",
             {
-                Size = UDim2.new(1, -au.UIElements.SideBarContainer.AbsoluteSize.X, 1, -au.Topbar.Height - footerHeight),
+                Size = UDim2.new(1, -au.SideBarWidth, 1, -au.Topbar.Height - footerHeight),
                 Position = UDim2.new(1, 0, 1, -footerHeight),
                 AnchorPoint = Vector2.new(1, 1),
                 BackgroundTransparency = 1
@@ -12919,10 +12922,12 @@ do
             )
             function au.User.Enable(aC)
                 au.User.Enabled = true
+                local userHeight = 42 + au.UIPadding
+                local footerHeight = au.Footer.Enabled and au.Footer.Height or 0
                 am(
                     au.UIElements.SideBarContainer,
                     .25,
-                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - 42 - (au.UIPadding * 2) - footerHeight)},
+                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - userHeight - footerHeight)},
                     Enum.EasingStyle.Quint,
                     Enum.EasingDirection.Out
                 ):Play()
@@ -12930,10 +12935,12 @@ do
             end
             function au.User.Disable(aC)
                 au.User.Enabled = false
+                local userHeight = 0
+                local footerHeight = au.Footer.Enabled and au.Footer.Height or 0
                 am(
                     au.UIElements.SideBarContainer,
                     .25,
-                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - footerHeight)},
+                    {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - userHeight - footerHeight)},
                     Enum.EasingStyle.Quint,
                     Enum.EasingDirection.Out
                 ):Play()
@@ -13067,7 +13074,7 @@ do
             )
             if not g then
                 warn("[ Window.Background ] Failed to load custom asset: " .. tostring(h))
-                    return
+                return
             end
             aF =
                 al(
@@ -13198,7 +13205,8 @@ do
                         TextSize = 14,
                         ThemeTag = {
                             TextColor3 = "Text"
-                        }
+                        },
+                        Name = "TextLabel"
                     }
                 ),
                 al(
@@ -13401,6 +13409,16 @@ do
                 )
             }
         )
+        if au.Folder and isfile("WindUI/" .. au.Folder .. "/window.json") then
+            local data = http:JSONDecode(readfile("WindUI/" .. au.Folder .. "/window.json"))
+            au.Position = UDim2.new(data.Position[1] or 0.5, data.Position[2] or 0, data.Position[3] or 0.5, data.Position[4] or 0)
+            au.Size = UDim2.new(data.Size[1] or 0, data.Size[2] or au.Size.X.Offset, data.Size[3] or 0, data.Size[4] or au.Size.Y.Offset)
+            au.SideBarWidth = data.SideBarWidth or au.SideBarWidth
+            au.UIElements.Main.Position = au.Position
+            au.UIElements.Main.Size = au.Size
+            au.UIElements.SideBarContainer.Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - userHeight - footerHeight)
+            au.UIElements.MainBar.Size = UDim2.new(1, -au.SideBarWidth, 1, -au.Topbar.Height - footerHeight)
+        end
         ak.AddSignal(
             au.UIElements.Main.Main.Topbar.Left:GetPropertyChangedSignal "AbsoluteSize",
             function()
@@ -13902,6 +13920,13 @@ do
                         ak.SafeCallback(au.OnCloseCallback)
                     end
                 )
+            end
+            if au.Folder then
+                writefile("WindUI/" .. au.Folder .. "/window.json", http:JSONEncode({
+                    Position = {au.Position.X.Scale, au.Position.X.Offset, au.Position.Y.Scale, au.Position.Y.Offset},
+                    Size = {au.Size.X.Scale, au.Size.X.Offset, au.Size.Y.Scale, au.Size.Y.Offset},
+                    SideBarWidth = au.SideBarWidth
+                }))
             end
             as.WindUI:ToggleAcrylic(false)
             au.UIElements.Main:WaitForChild "Main".Visible = false
@@ -14439,6 +14464,70 @@ do
             end
             return aq:New(C, au.UIElements.Main.Main.Topbar.Center)
         end
+        local splitter =
+            ak.NewRoundFrame(
+            99,
+            "Squircle",
+            {
+                ImageTransparency = .8,
+                ImageColor3 = Color3.new(1, 1, 1),
+                Size = UDim2.new(0, 4, 1, 0),
+                Position = UDim2.new(0, au.SideBarWidth - 2, 0, 0),
+                AnchorPoint = Vector2.new(0, 0)
+            },
+            {
+                al(
+                    "TextButton",
+                    {
+                        Size = UDim2.new(1, 0, 1, 0),
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0.5, 0, 0.5, 0),
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        Active = true,
+                        ZIndex = 99,
+                        Name = "Frame"
+                    }
+                )
+            }
+        )
+        splitter.Parent = au.UIElements.Main.Main
+        splitter.Name = "Splitter"
+        local isSideResizing = false
+        local initialWidth
+        local initialPos
+        ak.AddSignal(
+            splitter.Frame.InputBegan,
+            function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isSideResizing = true
+                    initialWidth = au.SideBarWidth
+                    initialPos = input.Position.X
+                    am(splitter, .1, {ImageTransparency = .35}):Play()
+                end
+            end
+        )
+        ak.AddSignal(
+            ae.InputChanged,
+            function(input)
+                if isSideResizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    local delta = input.Position.X - initialPos
+                    local newWidth = math.clamp(initialWidth + delta, au.SideBarMinWidth, au.SideBarMaxWidth)
+                    au.SideBarWidth = newWidth
+                    au.UIElements.SideBarContainer.Size = UDim2.new(0, newWidth, 1, -au.Topbar.Height - userHeight - footerHeight)
+                    au.UIElements.MainBar.Size = UDim2.new(1, -newWidth, 1, -au.Topbar.Height - footerHeight)
+                    splitter.Position = UDim2.new(0, newWidth - 2, 0, 0)
+                end
+            end
+        )
+        ak.AddSignal(
+            ae.InputEnded,
+            function(input)
+                if isSideResizing and input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isSideResizing = false
+                    am(splitter, .1, {ImageTransparency = .8}):Play()
+                end
+            end
+        )
         local function startResizing(B)
             if au.CanResize then
                 isResizing = true
@@ -14579,6 +14668,19 @@ do
                     end
                 end
             end
+        end
+        function au.Footer.SetText(self, text)
+            au.Footer.Text = text
+            footer.TextLabel.Text = text
+        end
+        function au.Footer.Toggle(self, bool)
+            au.Footer.Enabled = bool
+            footer.Visible = bool
+            local footerHeight = bool and au.Footer.Height or 0
+            local userHeight = au.User.Enabled and 42 + au.UIPadding or 0
+            am(au.UIElements.SideBarContainer, .25, {Size = UDim2.new(0, au.SideBarWidth, 1, -au.Topbar.Height - userHeight - footerHeight)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+            am(au.UIElements.MainBar, .25, {Size = UDim2.new(1, -au.SideBarWidth, 1, -au.Topbar.Height - footerHeight)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
+            am(au.UIElements.MainBar, .25, {Position = UDim2.new(1, 0, 1, -footerHeight)}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
         end
         return au
     end
