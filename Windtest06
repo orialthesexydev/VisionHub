@@ -12617,7 +12617,9 @@ do
                 IsToggleDragging = false,
                 SideBarVisible = true,
                 CanDrag = true,
-                IsInteractable = true -- New Feature: Interaction State
+                IsInteractable = true,
+                IsPinned = false, -- New Feature: Pinned state
+                ShowFPS = false -- New Feature: FPS Toggle
             }
             au.UICorner = au.Radius
             au.ElementConfig = {
@@ -12773,6 +12775,23 @@ do
             if au.ScrollBarEnabled then
                 ap(au.UIElements.SideBar, au.UIElements.SideBarContainer.Content, au, 3)
             end
+            
+            local watermarkLabel = al("TextLabel", {
+                Text = "",
+                Size = UDim2.new(1, -20, 0, 20),
+                Position = UDim2.new(0, 10, 1, -10),
+                AnchorPoint = Vector2.new(0, 1),
+                BackgroundTransparency = 1,
+                TextColor3 = Color3.new(1, 1, 1),
+                TextTransparency = 0.6,
+                FontFace = Font.new(ak.Font, Enum.FontWeight.Medium),
+                TextSize = 12,
+                TextXAlignment = "Right",
+                ZIndex = 5,
+                Visible = false,
+                Name = "Watermark"
+            })
+
             au.UIElements.MainBar =
                 al(
                 "Frame",
@@ -12783,6 +12802,7 @@ do
                     BackgroundTransparency = 1
                 },
                 {
+                    watermarkLabel,
                     ak.NewRoundFrame(
                         au.UICorner - (au.UIPadding / 2),
                         "Squircle",
@@ -13233,7 +13253,18 @@ do
                 g = createAuthor(au.Author)
             end
 
-            -- New Feature: Status Indicator
+            -- Feature: FPS Meter Text
+            local fpsLabel = al("TextLabel", {
+                Text = "",
+                FontFace = Font.new(ak.Font, Enum.FontWeight.Bold),
+                BackgroundTransparency = 1,
+                AutomaticSize = "XY",
+                TextSize = 10,
+                ThemeTag = { TextColor3 = "Accent" },
+                LayoutOrder = 1,
+                Visible = false
+            })
+
             local statusIndicator = al(
                 "TextLabel",
                 {
@@ -13269,7 +13300,6 @@ do
                 }
             )
             
-            -- Interaction Block Layer
             local interactLayer = al(
                 "Frame",
                 {
@@ -13392,6 +13422,7 @@ do
                                                     ),
                                                     al("Frame", { AutomaticSize="XY", BackgroundTransparency=1, LayoutOrder=1 }, {
                                                         al("UIListLayout", { FillDirection="Horizontal", Padding=UDim.new(0,5), VerticalAlignment="Center" }),
+                                                        fpsLabel,
                                                         j,
                                                         statusIndicator
                                                     }),
@@ -13664,7 +13695,6 @@ do
                     if not au.Closed and au.CanDrag then
                         if l and m == f.Frame then
                             am(f, .1, {ImageTransparency = .35}):Play()
-                            -- Feature: Background Fading when dragging
                             am(au.UIElements.Main.Background, 0.3, { ImageTransparency = 0.5 }):Play()
                         else
                             am(f, .2, {ImageTransparency = .8}):Play()
@@ -13763,19 +13793,16 @@ do
                 au:ToggleTransparency(r > 0)
             end
 
-            -- New Function: Notify Wrapper
             function au.Notify(m, ...)
                 if as.WindUI and as.WindUI.Notify then
                     return as.WindUI:Notify(...)
                 end
             end
 
-            -- New Function: Drag Toggle
             function au.SetDraggable(m, bool)
                 au.CanDrag = bool
             end
 
-            -- New Function: Set Status
             function au.SetStatus(m, text, color)
                 statusIndicator.Text = text or ""
                 statusIndicator.Visible = (text ~= "" and text ~= nil)
@@ -13784,14 +13811,55 @@ do
                 end
             end
 
-            -- New Function: Set Interactable
             function au.SetInteractable(m, bool)
                 au.IsInteractable = bool
                 interactLayer.Visible = not bool
                 am(interactLayer, 0.2, { BackgroundTransparency = bool and 1 or 0.85 }):Play()
             end
 
-            -- New Function: Banner Information Pop-up
+            -- New Utility: Toggle Pinned state
+            function au.SetPinned(m, bool)
+                au.IsPinned = bool
+            end
+
+            -- New Utility: Set content Watermark
+            function au.SetWatermark(m, text)
+                watermarkLabel.Text = text or ""
+                watermarkLabel.Visible = (text ~= "" and text ~= nil)
+            end
+
+            -- New Utility: Bring window to the front
+            function au.BringToFront(m)
+                if as.Parent then
+                    as.WindUI.ScreenGui.DisplayOrder = as.WindUI.ScreenGui.DisplayOrder + 1
+                end
+            end
+
+            -- Performance Utility: Update Loop
+            task.spawn(function()
+                local lastTime = tick()
+                local frames = 0
+                while task.wait(0.5) do
+                    if au.ShowFPS then
+                        local currentTime = tick()
+                        frames = frames + 1
+                        local delta = currentTime - lastTime
+                        if delta >= 1 then
+                            fpsLabel.Text = "["..tostring(math.floor(frames / delta)).." FPS]"
+                            fpsLabel.Visible = true
+                            lastTime = currentTime
+                            frames = 0
+                        end
+                    else
+                        fpsLabel.Visible = false
+                    end
+                end
+            end)
+
+            function au.ToggleFPS(m, bool)
+                au.ShowFPS = bool
+            end
+
             function au.Banner(m, text)
                 local bnr = al("Frame", {
                     Size = UDim2.new(1, -20, 0, 0),
@@ -14016,6 +14084,11 @@ do
                 )
             end
             function au.Close(r)
+                if au.IsPinned then
+                    au:Notify("Pinned", "The window is pinned and cannot be closed manually.")
+                    return { Destroy = function() end }
+                end
+
                 local u = {}
                 if au.OnCloseCallback then
                     task.spawn(
@@ -14773,7 +14846,7 @@ do
             function au.DisableTopbarButtons(J, L)
                 for M, N in next, L do
                     for O, P in next, au.TopBarButtons do
-                        if P.Name == N then
+                        if P.Name == NM then
                             P.Object.Visible = false
                         end
                     end
