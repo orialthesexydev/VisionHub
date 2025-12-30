@@ -12500,7 +12500,28 @@ do
             AllElements = {},
             ElementConfig = {},
             PendingFlags = {},
-            IsToggleDragging = false
+            IsToggleDragging = false,
+            Themes = {
+                Dark = {
+                    WindowBackground = Color3.fromRGB(30, 30, 30),
+                    Text = Color3.fromRGB(220, 220, 220),
+                    WindowShadow = Color3.fromRGB(20, 20, 20),
+                    WindowTopbarTitle = Color3.fromRGB(255, 255, 255),
+                    WindowTopbarAuthor = Color3.fromRGB(200, 200, 200),
+                    Black = Color3.fromRGB(0, 0, 0),
+                    WindowStroke = Color3.fromRGB(50, 50, 50)
+                },
+                Light = {
+                    WindowBackground = Color3.fromRGB(240, 240, 240),
+                    Text = Color3.fromRGB(40, 40, 40),
+                    WindowShadow = Color3.fromRGB(200, 200, 200),
+                    WindowTopbarTitle = Color3.fromRGB(0, 0, 0),
+                    WindowTopbarAuthor = Color3.fromRGB(100, 100, 100),
+                    Black = Color3.fromRGB(255, 255, 255),
+                    WindowStroke = Color3.fromRGB(220, 220, 220)
+                }
+            },
+            CurrentTheme = "Dark"
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
@@ -12757,12 +12778,18 @@ do
         if au.User then
             local function GetUserThumb()
                 local aC, aD =
-                    af:GetUserThumbnailAsync(
-                    au.User.Anonymous and 1 or af.LocalPlayer.UserId,
-                    Enum.ThumbnailType.HeadShot,
-                    Enum.ThumbnailSize.Size420x420
-                )
-                return aC
+                    pcall(function()
+                        return af:GetUserThumbnailAsync(
+                            au.User.Anonymous and 1 or af.LocalPlayer.UserId,
+                            Enum.ThumbnailType.HeadShot,
+                            Enum.ThumbnailSize.Size420x420
+                        )
+                    end)
+                if aC then
+                    return aD
+                else
+                    return "rbxassetid://0"
+                end
             end
             aB =
                 al(
@@ -13786,6 +13813,7 @@ do
                     if aF then
                         if aF:IsA "VideoFrame" then
                             aF.Visible = true
+                            aF:Play()
                         else
                             am(
                                 aF,
@@ -13893,6 +13921,7 @@ do
             if aF then
                 if aF:IsA "VideoFrame" then
                     aF.Visible = false
+                    aF:Pause()
                 else
                     am(
                         aF,
@@ -14541,6 +14570,15 @@ do
                 end
             end
         )
+        function au.SetTheme(r, theme)
+            if au.Themes[theme] then
+                au.CurrentTheme = theme
+                -- Apply theme to all elements
+                for key, color in pairs(au.Themes[theme]) do
+                    ak.SetThemeColor(key, color)
+                end
+            end
+        end
         return au
     end
 end
