@@ -12604,6 +12604,7 @@ do
                 ConfigManager = nil,
                 AcrylicPaint = nil,
                 CurrentTab = nil,
+                PreviousTab = nil,
                 TabModule = nil,
                 OnOpenCallback = nil,
                 OnCloseCallback = nil,
@@ -12620,7 +12621,7 @@ do
                 IsInteractable = true,
                 IsPinned = false,
                 SidebarAutoHoover = false,
-                CurrentAccent = nil
+                CurrentAccent = Color3.fromRGB(0, 120, 255)
             }
             au.UICorner = au.Radius
             au.ElementConfig = {
@@ -12673,7 +12674,7 @@ do
                 {
                     Size = UDim2.new(1, 0, 1, 0),
                     ImageTransparency = 1,
-                    ImageColor3 = Color3.new(0, 0, 0),
+                    ImageColor3 = Color3.new(1, 1, 1),
                     ZIndex = 98,
                     Active = false
                 }
@@ -13291,13 +13292,14 @@ do
             )
             
             local interactLayer = al(
-                "Frame",
+                "TextButton", -- Changed to TextButton to capture clicks when interaction is false
                 {
                     Size = UDim2.new(1, 0, 1, 0),
                     BackgroundColor3 = Color3.new(0,0,0),
                     BackgroundTransparency = 1,
                     ZIndex = 10000,
                     Visible = false,
+                    Text = "",
                     Name = "InteractLock"
                 },
                 {
@@ -13499,6 +13501,14 @@ do
                     )
                 }
             )
+            
+            ak.AddSignal(interactLayer.MouseButton1Click, function()
+                if not au.IsInteractable then
+                    au:Shake(3)
+                    au:Flash()
+                end
+            end)
+
             ak.AddSignal(
                 au.UIElements.Main.Main.Topbar.Left:GetPropertyChangedSignal "AbsoluteSize",
                 function()
@@ -13515,20 +13525,7 @@ do
                         UDim2.new(1, -l - m - ((au.UIPadding * 2) / as.WindUI.UIScale), 1, 0)
                 end
             )
-            if au.Topbar.ButtonsType ~= "Default" then
-                ak.AddSignal(
-                    au.UIElements.Main.Main.Topbar.Right:GetPropertyChangedSignal "AbsoluteSize",
-                    function()
-                        au.UIElements.Main.Main.Topbar.Left.Position =
-                            UDim2.new(
-                            0,
-                            (au.UIElements.Main.Main.Topbar.Right.AbsoluteSize.X / as.WindUI.UIScale) + au.UIPadding - 4,
-                            0,
-                            0
-                        )
-                    end
-                )
-            end
+
             function au.CreateTopbarButton(l, m, p, r, u, v, x)
                 local B =
                     ak.Image(
@@ -13622,7 +13619,7 @@ do
                     }
                 )
                 au.TopBarButtons[100 - u] = {
-                    Name = m,
+                    Name = l, -- Button Logic Identifier
                     Object = C
                 }
                 ak.AddSignal(
@@ -13747,126 +13744,48 @@ do
                     end
                 end
             )
-            function au.SetToggleKey(m, p)
-                au.ToggleKey = p
-            end
-            function au.SetTitle(m, p)
-                au.Title = p
-                j.Text = p
-            end
-            function au.SetAuthor(m, p)
-                au.Author = p
-                if not g then
-                    g = createAuthor(au.Author)
-                end
-                g.Text = p
-            end
-            function au.SetSize(m, p)
-                if typeof(p) == "UDim2" then
-                    au.Size = p
-                    am(au.UIElements.Main, 0.08, {Size = p}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
-                end
-            end
-            function au.SetBackgroundImage(m, p)
-                au.UIElements.Main.Background.ImageLabel.Image = p
-            end
-            function au.SetBackgroundImageTransparency(m, p)
-                if aF and aF:IsA "ImageLabel" then
-                    aF.ImageTransparency = math.floor(p * 10 + 0.5) / 10
-                end
-                au.BackgroundImageTransparency = math.floor(p * 10 + 0.5) / 10
-            end
-            function au.SetBackgroundTransparency(m, p)
-                local r = math.floor(tonumber(p) * 10 + 0.5) / 10
-                as.WindUI.TransparencyValue = r
-                au:ToggleTransparency(r > 0)
-            end
 
-            function au.Notify(m, ...)
-                if as.WindUI and as.WindUI.Notify then
-                    return as.WindUI:Notify(...)
-                end
-            end
+            function au.SetToggleKey(m, p) au.ToggleKey = p end
+            function au.SetTitle(m, p) au.Title = p j.Text = p end
+            function au.SetAuthor(m, p) au.Author = p if not g then g = createAuthor(au.Author) end g.Text = p end
+            function au.SetSize(m, p) if typeof(p) == "UDim2" then au.Size = p am(au.UIElements.Main, 0.08, {Size = p}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play() end end
+            function au.SetBackgroundImage(m, p) au.UIElements.Main.Background.ImageLabel.Image = p end
+            function au.SetBackgroundImageTransparency(m, p) if aF and aF:IsA "ImageLabel" then aF.ImageTransparency = math.floor(p * 10 + 0.5) / 10 end au.BackgroundImageTransparency = math.floor(p * 10 + 0.5) / 10 end
+            function au.SetBackgroundTransparency(m, p) local r = math.floor(tonumber(p) * 10 + 0.5) / 10 as.WindUI.TransparencyValue = r au:ToggleTransparency(r > 0) end
+            function au.Notify(m, ...) if as.WindUI and as.WindUI.Notify then return as.WindUI:Notify(...) end end
+            function au.SetDraggable(m, bool) au.CanDrag = bool end
+            function au.SetStatus(m, text, color) statusIndicator.Text = text or "" statusIndicator.Visible = (text ~= "" and text ~= nil) if color then statusIndicator.TextColor3 = color end end
+            function au.SetInteractable(m, bool) au.IsInteractable = bool interactLayer.Visible = not bool end
+            function au.SetPinned(m, bool) au.IsPinned = bool end
+            function au.SetWatermark(m, text) watermarkLabel.Text = text or "" watermarkLabel.Visible = (text ~= "" and text ~= nil) end
+            function au.BringToFront(m) if as.Parent then as.WindUI.ScreenGui.DisplayOrder = as.WindUI.ScreenGui.DisplayOrder + 1 end end
+            function au.Flash(m) task.spawn(function() am(ay, 0.1, { ImageTransparency = 0.5, ImageColor3 = Color3.fromRGB(255,255,255) }):Play() task.wait(0.1) am(ay, 0.4, { ImageTransparency = 1 }):Play() end) end
+            function au.Shake(m, intensity) intensity = intensity or 5 local orig = au.UIElements.Main.Position task.spawn(function() for i = 1, 6 do au.UIElements.Main.Position = orig + UDim2.new(0, math.random(-intensity, intensity), 0, math.random(-intensity, intensity)) task.wait(0.02) end au.UIElements.Main.Position = orig end) end
 
-            function au.SetDraggable(m, bool)
-                au.CanDrag = bool
-            end
-
-            function au.SetStatus(m, text, color)
-                statusIndicator.Text = text or ""
-                statusIndicator.Visible = (text ~= "" and text ~= nil)
-                if color then
-                    statusIndicator.TextColor3 = color
-                end
-            end
-
-            function au.SetInteractable(m, bool)
-                au.IsInteractable = bool
-                interactLayer.Visible = not bool
-                am(interactLayer, 0.2, { BackgroundTransparency = bool and 1 or 0.85 }):Play()
-            end
-
-            function au.SetPinned(m, bool)
-                au.IsPinned = bool
-            end
-
-            function au.SetWatermark(m, text)
-                watermarkLabel.Text = text or ""
-                watermarkLabel.Visible = (text ~= "" and text ~= nil)
-            end
-
-            function au.BringToFront(m)
-                if as.Parent then
-                    as.WindUI.ScreenGui.DisplayOrder = as.WindUI.ScreenGui.DisplayOrder + 1
-                end
-            end
-
-            -- New Utility: Flash window
-            function au.Flash(m)
-                task.spawn(function()
-                    am(ay, 0.1, { ImageTransparency = 0.5, ImageColor3 = Color3.fromRGB(255,255,255) }):Play()
-                    task.wait(0.1)
-                    am(ay, 0.4, { ImageTransparency = 1 }):Play()
-                end)
-            end
-
-            -- New Utility: Shake window
-            function au.Shake(m, intensity)
-                intensity = intensity or 5
-                local orig = au.UIElements.Main.Position
-                task.spawn(function()
-                    for i = 1, 6 do
-                        au.UIElements.Main.Position = orig + UDim2.new(0, math.random(-intensity, intensity), 0, math.random(-intensity, intensity))
-                        task.wait(0.02)
-                    end
-                    au.UIElements.Main.Position = orig
-                end)
-            end
-
-            -- New Utility: Dynamic Accent Swapper
             function au.UpdateAccent(m, color)
                 au.CurrentAccent = color
                 statusIndicator.TextColor3 = color
-                -- Updates generic dialog/ui buttons if internal windui supports Refresh ThemeTag
-                if as.WindUI and as.WindUI.UpdateTheme then
-                    as.WindUI:UpdateTheme({ Accent = color })
-                end
+                if as.WindUI and as.WindUI.UpdateTheme then as.WindUI:UpdateTheme({ Accent = color }) end
             end
 
-            -- New Utility: Hover sidebar
+            -- Fixed: Hover Sidebar Logic
             function au.SetSidebarAutoHoover(m, bool)
                 au.SidebarAutoHoover = bool
             end
 
             ak.AddSignal(ae.InputChanged, function(input)
-                if au.SidebarAutoHoover and not au.Closed then
-                    local mx = mouse.X / as.WindUI.UIScale
-                    local sideTriggerWidth = au.SideBarWidth + 40
-                    if mx < sideTriggerWidth and not au.SideBarVisible then
-                        au:ToggleSidebar()
-                    elseif mx >= sideTriggerWidth and au.SideBarVisible then
-                        au:ToggleSidebar()
-                    end
+                if not au.SidebarAutoHoover or au.Closed or not au.IsInteractable then return end
+                
+                -- Check proximity to Sidebar position in scaled space
+                local containerPos = au.UIElements.SideBarContainer.AbsolutePosition
+                local containerSize = au.UIElements.SideBarContainer.AbsoluteSize
+                local mX = input.Position.X
+                local triggerPadding = 50 -- Sensitivity buffer
+                
+                if mX >= containerPos.X - triggerPadding and mX <= containerPos.X + containerSize.X + triggerPadding then
+                    if not au.SideBarVisible then au:ToggleSidebar() end
+                else
+                    if au.SideBarVisible then au:ToggleSidebar() end
                 end
             end)
 
@@ -14095,10 +14014,10 @@ do
             end
             function au.Close(r)
                 if au.IsPinned then
-                    au:Notify("Pinned", "The window is pinned and cannot be closed manually.")
+                    au:Notify("Important", "This window is pinned and cannot be closed manually.")
                     return { Destroy = function() end }
                 end
-
+                
                 local u = {}
                 if au.OnCloseCallback then
                     task.spawn(
@@ -14334,6 +14253,7 @@ do
             local v = r.Init(au, as.WindUI, as.WindUI.TooltipGui)
             v:OnChange(
                 function(x)
+                    au.PreviousTab = au.CurrentTab
                     au.CurrentTab = x
                 end
             )
