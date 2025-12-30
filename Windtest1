@@ -12540,8 +12540,8 @@ do
     end
     function a.Z()
     local aa = (cloneref or clonereference or function(aa)
-            return aa
-        end)
+        return aa
+    end)
     local ae = aa(game:GetService "UserInputService")
     aa(game:GetService "RunService")
     local af = aa(game:GetService "Players")
@@ -12613,25 +12613,7 @@ do
             AllElements = {},
             ElementConfig = {},
             PendingFlags = {},
-            IsToggleDragging = false,
-            AdvancedFeatures = {
-                ThemeSwitcher = true,
-                AspectRatioLock = false,
-                StatusBar = true,
-                KeyboardNavigation = true,
-                AdvancedResizing = true
-            },
-            Themes = {
-                Default = {
-                    WindowBackground = Color3.fromRGB(255, 255, 255),
-                    Text = Color3.fromRGB(0, 0, 0)
-                },
-                Dark = {
-                    WindowBackground = Color3.fromRGB(30, 30, 30),
-                    Text = Color3.fromRGB(255, 255, 255)
-                }
-            },
-            CurrentTheme = "Default"
+            IsToggleDragging = false
         }
         au.UICorner = au.Radius
         au.ElementConfig = {
@@ -13580,21 +13562,21 @@ do
                         {
                             au.Topbar.ButtonsType == "Default" and
                                 al(
-                                    "UIGradient",
-                                    {
-                                        Rotation = 45,
-                                        Color = ColorSequence.new {
-                                            ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
-                                            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-                                            ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
-                                        },
-                                        Transparency = NumberSequence.new {
-                                            NumberSequenceKeypoint.new(0.0, 0.1),
-                                            NumberSequenceKeypoint.new(0.5, 1),
-                                            NumberSequenceKeypoint.new(1.0, 0.1)
-                                        }
+                                "UIGradient",
+                                {
+                                    Rotation = 45,
+                                    Color = ColorSequence.new {
+                                        ColorSequenceKeypoint.new(0.0, Color3.fromRGB(255, 255, 255)),
+                                        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
+                                        ColorSequenceKeypoint.new(1.0, Color3.fromRGB(255, 255, 255))
+                                    },
+                                    Transparency = NumberSequence.new {
+                                        NumberSequenceKeypoint.new(0.0, 0.1),
+                                        NumberSequenceKeypoint.new(0.5, 1),
+                                        NumberSequenceKeypoint.new(1.0, 0.1)
                                     }
-                                ) or
+                                }
+                            ) or
                                 nil
                         }
                     ),
@@ -13755,10 +13737,6 @@ do
         function au.SetSize(m, p)
             if typeof(p) == "UDim2" then
                 au.Size = p
-                if au.AdvancedFeatures.AspectRatioLock then
-                    local aspect = au.MinSize.X / au.MinSize.Y
-                    p = UDim2.new(0, p.X.Offset, 0, p.X.Offset / aspect)
-                end
                 am(au.UIElements.Main, 0.08, {Size = p}, Enum.EasingStyle.Quint, Enum.EasingDirection.Out):Play()
             end
         end
@@ -14134,14 +14112,6 @@ do
         end
         function au.SetCurrentConfig(r, u)
             au.CurrentConfig = u
-        end
-        function au.SetTheme(r, themeName)
-            if au.AdvancedFeatures.ThemeSwitcher and au.Themes[themeName] then
-                au.CurrentTheme = themeName
-                -- Apply theme colors
-                au.UIElements.Main.Background.ImageColor3 = au.Themes[themeName].WindowBackground
-                -- Add more theme applications as needed
-            end
         end
         do
             local r = 40
@@ -14628,38 +14598,6 @@ do
                     end
                 end
             end
-        end
-        -- Advanced Feature: Status Bar
-        if au.AdvancedFeatures.StatusBar then
-            au.UIElements.StatusBar = al("Frame", {
-                Size = UDim2.new(1, 0, 0, 20),
-                Position = UDim2.new(0, 0, 1, 0),
-                AnchorPoint = Vector2.new(0, 1),
-                BackgroundTransparency = 0.9,
-                Parent = au.UIElements.Main.Main
-            }, {
-                al("TextLabel", {
-                    Text = "Status: Ready",
-                    TextSize = 12,
-                    BackgroundTransparency = 1,
-                    Size = UDim2.new(1, 0, 1, 0)
-                })
-            })
-            function au.SetStatus(text)
-                au.UIElements.StatusBar.TextLabel.Text = "Status: " .. text
-            end
-        end
-        -- Advanced Feature: Keyboard Navigation
-        if au.AdvancedFeatures.KeyboardNavigation then
-            ak.AddSignal(ae.InputBegan, function(input)
-                if input.KeyCode == Enum.KeyCode.Tab then
-                    -- Implement tab navigation logic
-                end
-            end)
-        end
-        -- Advanced Resizing Handles (bottom-right only in original, but can add more if needed)
-        if au.AdvancedFeatures.AdvancedResizing then
-            -- Add additional resize handles if desired
         end
         return au
     end
